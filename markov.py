@@ -12,15 +12,19 @@ def save_msg(chat_id, message):
 def gen_msg(chat_id, space=False):
     error_msg = '目前发言过少，无法生成句子，请加大力度。'
     try:
-        with open(f'data/{chat_id}.txt', 'r') as f:
+        with open(f'data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
             markov = markovify.Text(f)
             sentence = markov.make_sentence()
-            if sentence:
-                if space:
-                    return sentence
-                else:
-                    return sentence.replace(' ', '')
+            retry = 0
+            while not sentence:
+                sentence = markov.make_sentence()
+                retry += 1
+                if retry > 2:
+                    return error_msg
+            if space:
+                return sentence
             else:
-                return error_msg
+                return sentence.replace(' ', '')
+
     except FileNotFoundError:
         return error_msg
