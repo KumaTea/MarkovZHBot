@@ -3,6 +3,7 @@ from markov import gen_msg
 
 
 def group_cmd(chat_id, command):
+    command = command[1:]
 
     if command.startswith(('speak', 'say', 'markov', '说')):
         msg = gen_msg(chat_id)

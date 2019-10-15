@@ -46,7 +46,8 @@ def mkdir(folder=None):
                 if not os.path.exists(str(items)):
                     os.mkdir(str(items))
         else:
-            os.mkdir(str(folder))
+            if not os.path.exists(str(folder)):
+                os.mkdir(str(folder))
 
 
 def starting():

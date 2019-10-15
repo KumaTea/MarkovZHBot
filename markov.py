@@ -4,7 +4,7 @@ import markovify
 
 def save_msg(chat_id, message):
     cut_message = (' '.join(jieba.cut(message)))
-    with open(f'data/{chat_id}.txt', 'a') as f:
+    with open(f'data/{chat_id}.txt', 'a', encoding='UTF-8') as f:
         f.write(f'\n{cut_message}')
     return True
 
