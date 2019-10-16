@@ -62,6 +62,7 @@ def del_admin(filename='admin'):
 
 def starting():
     mkdir('data')
+    del_admin()
     webhook_url = get_webhook(port=4041)
     set_proxy(port=10080)
     set_webhook(webhook_url)
