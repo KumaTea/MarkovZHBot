@@ -13,7 +13,7 @@ def getadminid():
     return adminid
 
 
-def set_proxy(ip='127.0.0.1', port='1080', protocol='http'):
+def set_proxy(ip='127.0.0.1', port=1080, protocol='http'):
     proxy = f'{protocol}://{ip}:{port}'
     os.environ['http_proxy'] = proxy
     os.environ['HTTP_PROXY'] = proxy
@@ -50,9 +50,19 @@ def mkdir(folder=None):
                 os.mkdir(str(folder))
 
 
+def del_admin(filename='admin'):
+    files = []
+    for i in os.listdir():
+        if os.path.isfile(i) and filename in i:
+            files.append(i)
+    for i in files:
+        os.remove(i)
+        print(f'Deleted \'{i}\'')
+
+
 def starting():
     mkdir('data')
     webhook_url = get_webhook(port=4041)
-    set_proxy()
+    set_proxy(port=10080)
     set_webhook(webhook_url)
     print('Starting fine.')
