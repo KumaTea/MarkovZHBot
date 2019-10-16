@@ -21,8 +21,8 @@ def set_proxy(ip='127.0.0.1', port='1080', protocol='http'):
     os.environ['HTTPS_PROXY'] = proxy
 
 
-def get_webhook(index):
-    return requests.get('http://127.0.0.1:4040/api/tunnels').json()['tunnels'][index]['public_url']
+def get_webhook(index=0, port=4040):
+    return requests.get(f'http://127.0.0.1:{port}/api/tunnels').json()['tunnels'][index]['public_url']
 
 
 def set_webhook(url):
@@ -52,7 +52,7 @@ def mkdir(folder=None):
 
 def starting():
     mkdir('data')
-    webhook_url = get_webhook(1)
-    set_proxy(port='10080')
+    webhook_url = get_webhook(port=4041)
+    set_proxy()
     set_webhook(webhook_url)
     print('Starting fine.')
