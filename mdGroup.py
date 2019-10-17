@@ -15,7 +15,7 @@ class Group:
 
     def text(self):
         if self.msg.startswith('/'):
-            resp = group_cmd(self.chat_id, self.msg, self.msg_id)
+            resp = group_cmd(self.chat_id, self.msg, self.msg_id, self.reply_to)
         else:
             resp = save_msg(self.chat_id, self.msg)
         return resp

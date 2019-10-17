@@ -2,17 +2,27 @@ import jieba
 import markovify
 
 
+punctuation = ['，', '。', '？', '?']
+ignore = ['http', '【']
+
+
 def msg_format(message):
-    return message.replace('， ， ，', '，，，').replace('。 。 。', '。。。').replace('？ ？ ？', '？？？')
+    for item in punctuation:
+        message = message.replace(f'{item} {item} {item}', f'{item}{item}{item}')
+    return message
 
 
 def save_msg(chat_id, message):
-    if 'http' not in message:
+    save = True
+    for item in ignore:
+        if item in message:
+            save = False
+    if save:
         cut_message = (' '.join(jieba.cut(message)))
         format_message = msg_format(cut_message)
         with open(f'data/{chat_id}.txt', 'a', encoding='UTF-8') as f:
             f.write(f'\n{format_message}')
-        return True
+    return True
 
 
 def gen_msg(chat_id, space=False):
