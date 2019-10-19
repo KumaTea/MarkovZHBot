@@ -64,6 +64,9 @@ def stat_send(chat_id, keyword=False):
         kw_count = stat_data['send']['keyword'].get(keyword, 0)
         stat_data['send']['keyword'][keyword] = kw_count + 1
 
+    with open(f'stat/{chat_id}.json', 'w') as f:
+        json.dump(stat_data, f)
+
 
 def most(from_list):
     if from_list:
