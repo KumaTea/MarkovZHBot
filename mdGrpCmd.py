@@ -3,7 +3,7 @@ from markov import gen_msg
 from botInfo import self_id
 from tools import get_chat_admin
 from threading import Timer
-from stat import stat_receive, stat_send, read_stat
+from mdStat import stat_receive, stat_send, read_stat
 import localDB
 
 

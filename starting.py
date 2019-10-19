@@ -2,7 +2,7 @@ import os
 import requests
 import markovify
 from botSession import bot
-from stat import reset_stat
+from mdStat import reset_stat
 from modelCache import models
 from scheduler import scheduler
 

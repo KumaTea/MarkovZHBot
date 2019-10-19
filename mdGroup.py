@@ -2,7 +2,7 @@ from botSession import bot
 from mdGrpCmd import group_cmd
 from markov import save_msg
 from botInfo import self_id
-from stat import stat_receive
+from mdStat import stat_receive
 
 
 class Group:
