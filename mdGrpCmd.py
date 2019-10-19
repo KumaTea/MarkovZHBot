@@ -35,23 +35,26 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
         msg = None
         result = False
         re_c, m_msg, m_cmd, sd_c, kw, date = read_stat(chat_id)
-        if date:
-            m_msg_u = bot.query(chat_id).chat_member(m_msg)
-            mm_f, mm_l = m_msg_u['first_name'], m_msg_u.get('last_name', '')
-            m_cmd_u = bot.query(chat_id).chat_member(m_cmd)
-            mc_f, mc_l = m_cmd_u['first_name'], m_cmd_u.get('last_name', '')
-            stat_msg = f'今天是{date}，以下是数据报告：\n' \
-                       f'我共学习{re_c}次，说话{sd_c}次。kw\n' \
-                       f'今天发言最多的是{mm_f}{mm_l}，指使我说话最多的则是{mc_f}{mc_l}。'
-            if kw:
-                kw_k, kw_v = '', ''
-                for i in kw:
-                    kw_k, kw_v = i, kw[i]
-                to_send = stat_msg.replace('。kw', f'，其中{kw_k}了{kw_v}次。')
-            else:
-                to_send = stat_msg.replace('kw', '')
+        try:
+            if date:
+                m_msg_u = bot.query(chat_id).chat_member(m_msg)
+                mm_f, mm_l = m_msg_u['first_name'], m_msg_u.get('last_name', '')
+                m_cmd_u = bot.query(chat_id).chat_member(m_cmd)
+                mc_f, mc_l = m_cmd_u['first_name'], m_cmd_u.get('last_name', '')
+                stat_msg = f'今天是{date}，以下是数据报告：\n' \
+                           f'我共学习{re_c}次，说话{sd_c}次。kw\n' \
+                           f'今天发言最多的是{mm_f}{mm_l}，指使我说话最多的则是{mc_f}{mc_l}。'
+                if kw:
+                    kw_k, kw_v = '', ''
+                    for i in kw:
+                        kw_k, kw_v = i, kw[i]
+                    to_send = stat_msg.replace('。kw', f'，其中{kw_k}了{kw_v}次。')
+                else:
+                    to_send = stat_msg.replace('kw', '')
 
-            bot.send(chat_id).message(to_send)
+                bot.send(chat_id).message(to_send)
+        except KeyError:
+            pass
 
     else:
         msg = None
