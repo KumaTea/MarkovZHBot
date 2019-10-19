@@ -1,6 +1,10 @@
 import os
 import requests
+import markovify
 from botSession import bot
+from stat import reset_stat
+from modelCache import models
+from scheduler import scheduler
 
 
 def getadminid():
@@ -38,8 +42,6 @@ def set_webhook(url):
 
 
 def mkdir(folder=None):
-    if not os.path.exists('tmp'):
-        os.mkdir('tmp')
     if folder:
         if type(folder) == list or type(folder) == tuple:
             for items in folder:
@@ -60,10 +62,26 @@ def del_admin(filename='admin'):
         print(f'Deleted \'{i}\'')
 
 
+def pre_model(size=32768):
+    files = []
+    for i in os.listdir('data'):
+        if os.path.isfile(i) and os.path.getsize(i) > size:
+            files.append(i)
+    for i in files:
+        chat_id = int(os.path.splitext(i)[0].replace('data/', ''))
+        with open(i, 'r', encoding='UTF-8') as f:
+            models[chat_id] = markovify.Text(f)
+        print(f'Generated cached Markov model for chat {chat_id}.')
+
+
 def starting():
     mkdir('data')
+    mkdir('stat')
     del_admin()
     webhook_url = get_webhook(port=4041)
     set_proxy(port=10080)
     set_webhook(webhook_url)
+    pre_model()
+    scheduler.add_job(reset_stat, 'cron', hour=0, minute=0)
+    scheduler.start()
     print('Starting fine.')

@@ -1,5 +1,5 @@
 from tgapi import Bot
-from botInfo import selfid
+from botInfo import self_id
 
 
-bot = Bot(selfid)
+bot = Bot(self_id)
