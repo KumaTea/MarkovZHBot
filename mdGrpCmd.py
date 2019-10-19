@@ -53,7 +53,7 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                 if chat_id in localDB.chat:
                     if localDB.chat[chat_id]['replace']:
                         for i in localDB.chat[chat_id]['replace']:
-                            to_send.replace(i, localDB.chat[chat_id]['replace'][i])
+                            to_send = to_send.replace(i, localDB.chat[chat_id]['replace'][i])
                 result = bot.send(chat_id).message(to_send)
             else:
                 result = False
@@ -67,8 +67,10 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
     if result:
         if chat_id in localDB.chat:
             kw = localDB.chat[chat_id]['keyword']
-            if kw in msg:
+            if msg and kw in msg:
                 stat_send(chat_id, kw)
+            else:
+                stat_send(chat_id)
         else:
             stat_send(chat_id)
         if del_msg:
