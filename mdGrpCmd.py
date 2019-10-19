@@ -33,7 +33,6 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
 
     elif command.startswith('stat'):
         msg = None
-        result = False
         re_c, m_msg, m_cmd, sd_c, kw, date = read_stat(chat_id)
         try:
             if date:
@@ -51,17 +50,21 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                     to_send = stat_msg.replace('。kw', f'，其中{kw_k}了{kw_v}次。')
                 else:
                     to_send = stat_msg.replace('kw', '')
-
-                bot.send(chat_id).message(to_send)
+                if chat_id in localDB.chat:
+                    if localDB.chat[chat_id]['replace']:
+                        for i in localDB.chat[chat_id]['replace']:
+                            to_send.replace(i, localDB.chat[chat_id]['replace'][i])
+                result = bot.send(chat_id).message(to_send)
+            else:
+                result = False
         except KeyError:
-            pass
+            result = False
 
     else:
         msg = None
         result = False
 
     if result:
-        sent_meg = bot.get(result).message('id')
         if chat_id in localDB.chat:
             kw = localDB.chat[chat_id]['keyword']
             if kw in msg:
@@ -69,6 +72,7 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
         else:
             stat_send(chat_id)
         if del_msg:
+            sent_meg = bot.get(result).message('id')
             del_sent = Timer(1800, bot.delete(chat_id).message, [sent_meg])
             del_sent.start()
 

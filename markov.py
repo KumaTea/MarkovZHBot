@@ -43,7 +43,7 @@ def gen_sentence(model, space, retry_times=10):
 
 
 def gen_msg(chat_id, space=False, cache=False, retry_times=10):
-    if cache:
+    if cache or chat_id in models:
         if random.random() < 0.9:
             sentence = gen_sentence(models[chat_id], space, 3)
         else:
