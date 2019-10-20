@@ -3,6 +3,7 @@ from markov import gen_msg
 from botInfo import self_id
 from tools import get_chat_admin
 from threading import Timer
+from modelCache import name
 from mdStat import stat_receive, stat_send, read_stat
 import localDB
 
@@ -39,13 +40,22 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                 start_msg = '查询统计数据中，请稍后。。。'
                 sent_start = bot.send(chat_id).message(start_msg)
                 sent_start_id = bot.get(sent_start).message('id')
-                m_msg_u = bot.query(chat_id).chat_member(m_msg)
-                mm_f, mm_l = m_msg_u['first_name'], m_msg_u.get('last_name', '')
-                m_cmd_u = bot.query(chat_id).chat_member(m_cmd)
-                mc_f, mc_l = m_cmd_u['first_name'], m_cmd_u.get('last_name', '')
+                if m_msg in name:
+                    mm_f, mm_l = name[m_msg]
+                else:
+                    m_msg_u = bot.query(chat_id).chat_member(m_msg)
+                    mm_f, mm_l = m_msg_u['first_name'], m_msg_u.get('last_name', '')
+                    name[m_msg] = mm_f, mm_l
+                if m_cmd in name:
+                    mc_f, mc_l = name[m_cmd]
+                else:
+                    m_cmd_u = bot.query(chat_id).chat_member(m_cmd)
+                    mc_f, mc_l = m_cmd_u['first_name'], m_cmd_u.get('last_name', '')
+                    name[m_cmd] = mm_f, mm_l
+
                 stat_msg = f'今天是{date}，以下是数据报告：\n' \
                            f'我共学习{re_c}次，说话{sd_c}次。kw\n' \
-                           f'今天发言最多的是{mm_f}{mm_l}，指使我说话最多的则是{mc_f}{mc_l}。'
+                           f'今天发言最多的是{mm_f}{mm_l}，指使我说话最多的是{mc_f}{mc_l}。'
                 if kw:
                     kw_k, kw_v = '', ''
                     for i in kw:
