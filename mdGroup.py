@@ -4,34 +4,6 @@ from markov import save_msg
 from botInfo import self_id
 from mdStat import stat_receive
 import localDB
-import time
-from threading import Thread
-from modelCache import cool_status
-
-
-chat_id = 0
-
-
-def cooler(chat):
-    def executor(func):
-        if chat in cool_status:
-            if cool_status[chat]:
-                t = Thread(target=do_colling, args=[chat])
-                t.start()
-                return func
-            else:
-                print('Cooling...')
-        else:
-            t = Thread(target=do_colling, args=[chat])
-            t.start()
-            return func
-    return executor
-
-
-def do_colling(chat, cool_time=2):
-    cool_status[chat] = False
-    time.sleep(cool_time)
-    cool_status[chat] = True
 
 
 class Group:
@@ -40,8 +12,6 @@ class Group:
         self.data = data
         bot_getter = bot.get(data)
         self.chat_id = bot_getter.chat('id')
-        global chat_id
-        chat_id = self.chat_id
         self.msg = bot_getter.message()
         self.msg_id = bot_getter.message('id')
         self.reply_to = bot_getter.reply('id')
@@ -50,7 +20,6 @@ class Group:
         self.delete = (localDB.chat[self.chat_id]['delete'] if 'delete' in localDB.chat[self.chat_id] else True) \
             if self.chat_id in localDB.chat else True
 
-    @cooler(chat_id)
     def text(self):
         if self.msg.startswith('/'):
             resp = group_cmd(

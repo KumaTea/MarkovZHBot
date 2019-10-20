@@ -5,6 +5,7 @@ from tools import get_chat_admin
 from threading import Timer
 from modelCache import name
 from mdStat import stat_receive, stat_send, read_stat
+import time
 import localDB
 
 
@@ -33,6 +34,7 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
             result = bot.send(chat_id).message(msg)
 
     elif command.startswith('stat'):
+        start_time = int(time.time() * 1000)
         msg = None
         re_c, m_msg, m_cmd, sd_c, kw, date = read_stat(chat_id)
         try:
@@ -55,7 +57,8 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
 
                 stat_msg = f'今天是{date}，以下是数据报告：\n' \
                            f'我共学习{re_c}次，说话{sd_c}次。kw\n' \
-                           f'今天发言最多的是{mm_f}{mm_l}，指使我说话最多的是{mc_f}{mc_l}。'
+                           f'今天发言最多的是{mm_f}{mm_l}，指使我说话最多的是{mc_f}{mc_l}。\n' \
+                           f'本次查询花费了delayed_time_length秒。'
                 if kw:
                     kw_k, kw_v = '', ''
                     for i in kw:
@@ -67,6 +70,8 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                     if localDB.chat[chat_id]['replace']:
                         for i in localDB.chat[chat_id]['replace']:
                             to_send = to_send.replace(i, localDB.chat[chat_id]['replace'][i])
+                end_time = int(time.time() * 1000)
+                to_send = to_send.replace('delayed_time_length', str((end_time - start_time) / 1000))
                 result = bot.edit(chat_id, sent_start_id).message(to_send)
             else:
                 result = False
