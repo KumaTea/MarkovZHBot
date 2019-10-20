@@ -17,10 +17,8 @@ class Group:
         self.reply_to = bot_getter.reply('id')
         self.reply_to_user = bot_getter.reply('user')
         self.user_id = bot_getter.user('id')
-        if self.chat_id in localDB.chat:
-            self.delete = localDB.chat[self.chat_id]['delete'] if 'delete' in localDB.chat[self.chat_id] else True
-        else:
-            self.delete = True
+        self.delete = (localDB.chat[self.chat_id]['delete'] if 'delete' in localDB.chat[self.chat_id] else True) \
+            if self.chat_id in localDB.chat else True
 
     def text(self):
         if self.msg.startswith('/'):

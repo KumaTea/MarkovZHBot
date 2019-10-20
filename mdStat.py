@@ -37,7 +37,7 @@ def stat_receive(chat_id, user_id, msg_type):
     try:
         with open(f'stat/{chat_id}.json', 'r') as f:
             stat_data = json.load(f)
-    except FileNotFoundError:
+    except FileNotFoundError or json.decoder.JSONDecodeError:
         stat_data = empty_stat_data
         stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
 
@@ -55,7 +55,7 @@ def stat_send(chat_id, keyword=False):
     try:
         with open(f'stat/{chat_id}.json', 'r') as f:
             stat_data = json.load(f)
-    except FileNotFoundError:
+    except FileNotFoundError or json.decoder.JSONDecodeError:
         stat_data = empty_stat_data
         stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
 
@@ -86,7 +86,7 @@ def read_stat(chat_id):
     try:
         with open(f'stat/{chat_id}.json', 'r') as f:
             stat_data = json.load(f)
-    except FileNotFoundError:
+    except FileNotFoundError or json.decoder.JSONDecodeError:
         return None, None, None, None, None, None
 
     if stat_data['send']['keyword']:
