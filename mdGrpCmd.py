@@ -36,6 +36,9 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
         re_c, m_msg, m_cmd, sd_c, kw, date = read_stat(chat_id)
         try:
             if date:
+                start_msg = '查询统计数据中，请稍后。。。'
+                sent_start = bot.send(chat_id).message(start_msg)
+                sent_start_id = bot.get(sent_start).message('id')
                 m_msg_u = bot.query(chat_id).chat_member(m_msg)
                 mm_f, mm_l = m_msg_u['first_name'], m_msg_u.get('last_name', '')
                 m_cmd_u = bot.query(chat_id).chat_member(m_cmd)
@@ -54,7 +57,7 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                     if localDB.chat[chat_id]['replace']:
                         for i in localDB.chat[chat_id]['replace']:
                             to_send = to_send.replace(i, localDB.chat[chat_id]['replace'][i])
-                result = bot.send(chat_id).message(to_send)
+                result = bot.edit(chat_id, sent_start_id).message(to_send)
             else:
                 result = False
         except KeyError:
