@@ -66,8 +66,8 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
 
     if result:
         if chat_id in localDB.chat:
-            kw = localDB.chat[chat_id]['keyword']
-            if msg and kw in msg:
+            kw = localDB.chat[chat_id].get('keyword', False)
+            if kw and msg and kw in msg:
                 stat_send(chat_id, kw)
             else:
                 stat_send(chat_id)

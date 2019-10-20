@@ -19,8 +19,8 @@ empty_stat_data = {
 def reset_stat():
     files = []
     for i in os.listdir('stat'):
-        if os.path.isfile(i):
-            files.append(i)
+        if os.path.isfile(f'stat/{i}'):
+            files.append(f'stat/{i}')
     for i in files:
         os.remove(i)
         print(f'Deleted \'{i}\'')
