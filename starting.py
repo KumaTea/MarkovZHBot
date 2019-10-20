@@ -65,8 +65,8 @@ def del_admin(filename='admin'):
 def pre_model(size=32768):
     files = []
     for i in os.listdir('data'):
-        if os.path.isfile(i) and os.path.getsize(i) > size:
-            files.append(i)
+        if os.path.isfile(f'data/{i}') and os.path.getsize(f'data/{i}') > size:
+            files.append(f'data/{i}')
     for i in files:
         chat_id = int(os.path.splitext(i)[0].replace('data/', ''))
         with open(i, 'r', encoding='UTF-8') as f:

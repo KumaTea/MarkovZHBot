@@ -51,6 +51,7 @@ def gen_msg(chat_id, space=False, cache=False, retry_times=10):
                 markov = markovify.Text(f)
                 sentence = gen_sentence(markov, space, 3)
                 models[chat_id] = markov
+            print(f'Generated new model for {chat_id}')
         return sentence
     else:
         try:
