@@ -97,8 +97,11 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
         else:
             stat_send(chat_id)
         if del_msg:
-            sent_meg = bot.get(result).message('id')
-            del_sent = Timer(1800, bot.delete(chat_id).message, [sent_meg])
-            del_sent.start()
+            try:
+                sent_meg = bot.get(result).message('id')
+                del_sent = Timer(1800, bot.delete(chat_id).message, [sent_meg])
+                del_sent.start()
+            except KeyError:
+                print('KeyError, ignoring...')
 
     return result
