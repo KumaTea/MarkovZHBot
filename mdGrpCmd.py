@@ -57,7 +57,7 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
 
                 stat_msg = f'今天是{date}，以下是数据报告：\n' \
                            f'我共学习{re_c}次，说话{sd_c}次。kw\n' \
-                           f'今天发言最多的是{mm_f}{mm_l}，指使我说话最多的是{mc_f}{mc_l}。\n' \
+                           f'今天发言最多的是{mm_f}{mm_l}，让我说话最多的是{mc_f}{mc_l}。\n' \
                            f'本次查询花费了delayed_time_length秒。'
                 if kw:
                     kw_k, kw_v = '', ''
@@ -66,16 +66,21 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                     to_send = stat_msg.replace('。kw', f'，其中{kw_k}了{kw_v}次。')
                 else:
                     to_send = stat_msg.replace('kw', '')
+                if (mm_f, mm_l) == (mc_f, mc_l):
+                    to_send = to_send.replace('让我说话最多的是', '让我说话最多的也是')
                 if chat_id in localDB.chat:
-                    if localDB.chat[chat_id]['replace']:
-                        for i in localDB.chat[chat_id]['replace']:
-                            to_send = to_send.replace(i, localDB.chat[chat_id]['replace'][i])
+                    if 'replace' in localDB.chat[chat_id]:
+                        if localDB.chat[chat_id]['replace']:
+                            for i in localDB.chat[chat_id]['replace']:
+                                to_send = to_send.replace(i, localDB.chat[chat_id]['replace'][i])
                 end_time = int(time.time() * 1000)
                 to_send = to_send.replace('delayed_time_length', str((end_time - start_time) / 1000))
                 result = bot.edit(chat_id, sent_start_id).message(to_send)
             else:
+                print('Stat: No date')
                 result = False
         except KeyError:
+            print('Stat: KeyError')
             result = False
 
     else:
