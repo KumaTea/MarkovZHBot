@@ -6,6 +6,7 @@ from modelCache import models
 
 punctuation = ['，', '。', '？', '?']
 ignore = ['http', '【', 'likenum', '#']
+ignore_starting = ['@']
 error_msg = '生成句子失败了，请重试。'
 
 
@@ -19,6 +20,9 @@ def save_msg(chat_id, message):
     save = True
     for item in ignore:
         if item in message:
+            save = False
+    for item in ignore_starting:
+        if message.startswith(item):
             save = False
     if save:
         cut_message = (' '.join(jieba.cut(message)))

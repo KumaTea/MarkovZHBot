@@ -109,14 +109,17 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
             except KeyError:
                 print('KeyError, ignoring...')
         if sd_c:
-            if sd_c > cool_threshold:
+            if sd_c > cool_threshold and chat_id not in blacklist:
                 blacklist[chat_id] = trig_rate
+                bot.send(chat_id).message(f'由于本群今日触发量超过{cool_threshold}，本群已于今日进入冷却名单。')
                 print(f'Adding {chat_id} into blacklist...')
         else:
             if random.random() > 0.9:
                 re_c, m_msg, m_cmd, sd_c, kw, date, size = read_stat(chat_id)
-                if sd_c > cool_threshold:
-                    blacklist[chat_id] = trig_rate
-                    print(f'Adding {chat_id} into blacklist...')
+                if sd_c:
+                    if sd_c > cool_threshold and chat_id not in blacklist:
+                        blacklist[chat_id] = trig_rate
+                        print(f'Adding {chat_id} into blacklist...')
+                        bot.send(chat_id).message(f'由于本群今日触发量超过{cool_threshold}，本群已于今日进入冷却名单。')
 
     return result
