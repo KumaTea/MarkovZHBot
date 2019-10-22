@@ -60,7 +60,7 @@ def del_admin(filename='admin'):
             files.append(i)
     for i in files:
         os.remove(i)
-        print(f'Deleted \'{i}\'')
+        print(f'[INFO] Deleted {i}')
 
 
 def pre_model(size=32768):
@@ -70,10 +70,10 @@ def pre_model(size=32768):
             files.append(f'data/{i}')
     for i in files:
         chat_id = int(os.path.splitext(i)[0].replace('data/', ''))
-        print(f'Generating cached Markov model for chat {chat_id}.')
+        print(f'[INFO] Generating cached Markov model for chat {chat_id}.')
         with open(i, 'r', encoding='UTF-8') as f:
             models[chat_id] = markovify.Text(f)
-        print(f'Generated.')
+        print(f'[INFO] Generated.')
 
 
 def pre_blacklist():
@@ -86,7 +86,7 @@ def pre_blacklist():
         if sd_c:
             if sd_c > cool_threshold:
                 blacklist[i] = trig_rate
-                print(f'Chat {i} in blacklist today...')
+                print(f'[INFO] Chat {i} in blacklist today...')
 
 
 def starting():
@@ -100,4 +100,4 @@ def starting():
     pre_blacklist()
     scheduler.add_job(reset_stat, 'cron', hour=0, minute=0)
     scheduler.start()
-    print('Starting fine.')
+    print('[INFO] Starting fine.')

@@ -24,10 +24,9 @@ def reset_stat():
             files.append(f'stat/{i}')
     for i in files:
         os.remove(i)
-        print(f'Deleted \'{i}\'')
+        print(f'[INFO] Deleted {i}')
     modelCache.blacklist = {}
-    print('Stat reset.')
-
+    print('[INFO] Stat reset.')
 
 
 def new_stat(chat_id):

@@ -27,7 +27,7 @@ class Group:
             if random.random() < blacklist[self.chat_id]:
                 response = True
             else:
-                print('Ignoring chat in blacklist...')
+                print('[INFO] Ignoring chat in blacklist...')
                 response = False
         else:
             response = True
