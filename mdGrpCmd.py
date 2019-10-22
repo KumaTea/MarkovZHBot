@@ -6,12 +6,16 @@ from threading import Timer
 from modelCache import name
 from mdStat import stat_receive, stat_send, read_stat
 import time
+import random
 import localDB
+from modelCache import blacklist
+from botInfo import cool_threshold, trig_rate
 
 
 def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=True, user_id=None):
     command = command[1:]
     is_admin = self_id in get_chat_admin(chat_id)
+    sd_c = None
 
     if command.startswith(('speak', 'say', 'markov', '说')):
         msg = gen_msg(chat_id)
@@ -36,7 +40,7 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
     elif command.startswith('stat'):
         start_time = int(time.time() * 1000)
         msg = None
-        re_c, m_msg, m_cmd, sd_c, kw, date = read_stat(chat_id)
+        re_c, m_msg, m_cmd, sd_c, kw, date, size = read_stat(chat_id)
         try:
             if date:
                 start_msg = '查询统计数据中，请稍后。。。'
@@ -56,8 +60,9 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                     name[m_cmd] = mm_f, mm_l
 
                 stat_msg = f'今天是{date}，以下是数据报告：\n' \
-                           f'我共学习{re_c}次，说话{sd_c}次。kw\n' \
+                           f'我共学习{re_c}次，说话{sd_c}次。kw' \
                            f'今天发言最多的是{mm_f}{mm_l}，让我说话最多的是{mc_f}{mc_l}。\n' \
+                           f'本群目前的数据量为{size}。' \
                            f'本次查询花费了delayed_time_length秒。'
                 if kw:
                     kw_k, kw_v = '', ''
@@ -103,5 +108,15 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                 del_sent.start()
             except KeyError:
                 print('KeyError, ignoring...')
+        if sd_c:
+            if sd_c > cool_threshold:
+                blacklist[chat_id] = trig_rate
+                print(f'Adding {chat_id} into blacklist...')
+        else:
+            if random.random() > 0.9:
+                re_c, m_msg, m_cmd, sd_c, kw, date, size = read_stat(chat_id)
+                if sd_c > cool_threshold:
+                    blacklist[chat_id] = trig_rate
+                    print(f'Adding {chat_id} into blacklist...')
 
     return result

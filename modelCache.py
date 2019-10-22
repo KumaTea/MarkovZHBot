@@ -1,2 +1,3 @@
 models = {}
 name = {}
+blacklist = {}

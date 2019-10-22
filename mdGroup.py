@@ -3,6 +3,7 @@ from mdGrpCmd import group_cmd
 from markov import save_msg
 from botInfo import self_id
 from mdStat import stat_receive
+from modelCache import blacklist
 import localDB
 import random
 
@@ -22,10 +23,11 @@ class Group:
             if self.chat_id in localDB.chat else True
 
     def text(self):
-        if self.chat_id in localDB.blacklist:
-            if random.random() < localDB.blacklist[self.chat_id]:
+        if self.chat_id in blacklist:
+            if random.random() < blacklist[self.chat_id]:
                 response = True
             else:
+                print('Ignoring chat in blacklist...')
                 response = False
         else:
             response = True

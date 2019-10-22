@@ -5,7 +5,7 @@ from modelCache import models
 
 
 punctuation = ['，', '。', '？', '?']
-ignore = ['http', '【', 'likenum']
+ignore = ['http', '【', 'likenum', '#']
 error_msg = '生成句子失败了，请重试。'
 
 
@@ -44,7 +44,7 @@ def gen_sentence(model, space, retry_times=10):
 
 def gen_msg(chat_id, space=False, cache=False, retry_times=10):
     if cache or chat_id in models:
-        if random.random() < 0.9:
+        if random.random() > 0.1:
             sentence = gen_sentence(models[chat_id], space, 3)
         else:
             with open(f'data/{chat_id}.txt', 'r', encoding='UTF-8') as f:

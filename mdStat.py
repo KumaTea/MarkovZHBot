@@ -93,9 +93,9 @@ def read_stat(chat_id):
         with open(f'stat/{chat_id}.json', 'r') as f:
             stat_data = json.load(f)
     except FileNotFoundError:
-        return None, None, None, None, None, None
+        return None, None, None, None, None, None, None
     except json.decoder.JSONDecodeError:
-        return None, None, None, None, None, None
+        return None, None, None, None, None, None, None
 
     if stat_data['send']['keyword']:
         kw = stat_data['send']['keyword']
@@ -106,4 +106,11 @@ def read_stat(chat_id):
     m_cmd = most(stat_data['receive']['cmd_by'])
     sd_c = stat_data['send']['count']
     date = stat_data['date']
-    return re_c, m_msg, m_cmd, sd_c, kw, date
+    size = os.path.getsize(f'data/{chat_id}.txt')
+    if size > 1048576:
+        f_size = f'{round(size/1048576, 2)}MB'
+    elif size > 1024:
+        f_size = f'{round(size / 1024, 2)}KB'
+    else:
+        f_size = f'{size}Bytes'
+    return re_c, m_msg, m_cmd, sd_c, kw, date, f_size

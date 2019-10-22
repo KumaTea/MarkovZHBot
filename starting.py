@@ -69,9 +69,10 @@ def pre_model(size=32768):
             files.append(f'data/{i}')
     for i in files:
         chat_id = int(os.path.splitext(i)[0].replace('data/', ''))
+        print(f'Generating cached Markov model for chat {chat_id}.')
         with open(i, 'r', encoding='UTF-8') as f:
             models[chat_id] = markovify.Text(f)
-        print(f'Generated cached Markov model for chat {chat_id}.')
+        print(f'Generated.')
 
 
 def starting():
