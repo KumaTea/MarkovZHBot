@@ -2,9 +2,10 @@ import os
 import requests
 import markovify
 from botSession import bot
-from mdStat import reset_stat
-from modelCache import models
+from mdStat import reset_stat, read_stat
+from modelCache import models, blacklist
 from scheduler import scheduler
+from botInfo import cool_threshold, trig_rate
 
 
 def getadminid():
@@ -75,6 +76,19 @@ def pre_model(size=32768):
         print(f'Generated.')
 
 
+def pre_blacklist():
+    chats = []
+    for i in os.listdir('data'):
+        if os.path.isfile(f'data/{i}'):
+            chats.append(int(i.replace('.txt', '')))
+    for i in chats:
+        re_c, m_msg, m_cmd, sd_c, kw, date, size = read_stat(i)
+        if sd_c:
+            if sd_c > cool_threshold:
+                blacklist[i] = trig_rate
+                print(f'Chat {i} in blacklist today...')
+
+
 def starting():
     mkdir('data')
     mkdir('stat')
@@ -83,6 +97,7 @@ def starting():
     set_proxy(port=10080)
     set_webhook(webhook_url)
     pre_model()
+    pre_blacklist()
     scheduler.add_job(reset_stat, 'cron', hour=0, minute=0)
     scheduler.start()
     print('Starting fine.')

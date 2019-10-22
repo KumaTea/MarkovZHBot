@@ -1,6 +1,7 @@
 import os
 import json
 from datetime import datetime
+import modelCache
 
 empty_stat_data = {
     'date': '',
@@ -24,6 +25,9 @@ def reset_stat():
     for i in files:
         os.remove(i)
         print(f'Deleted \'{i}\'')
+    modelCache.blacklist = {}
+    print('Stat reset.')
+
 
 
 def new_stat(chat_id):
