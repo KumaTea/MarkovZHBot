@@ -1,6 +1,5 @@
 from botSession import bot
 from markov import gen_msg
-from botInfo import self_id
 from tools import get_chat_admin
 from threading import Timer
 from modelCache import name
@@ -9,10 +8,10 @@ import time
 import random
 import localDB
 from modelCache import blacklist
-from botInfo import cool_threshold, trig_rate
+from botInfo import self_id, cool_threshold, trig_rate
 
 
-def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=True, user_id=None):
+def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=True, user_id=None, reply_to_user=None):
     command = command[1:]
     is_admin = self_id in get_chat_admin(chat_id)
     sd_c = None
@@ -86,6 +85,17 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                 result = False
         except KeyError:
             print('[ERROR] Stat: KeyError')
+            result = False
+
+    elif command.startswith(('re', 'new', 'ano', 'change')):
+        if reply_to and reply_to_user == self_id:
+            msg = gen_msg(chat_id)
+            stat_receive(chat_id, user_id, 'cmd')
+            if is_admin and del_cmd:
+                bot.delete(chat_id, msg_id).message()
+            result = bot.edit(chat_id, msg_id).message(msg)
+        else:
+            msg = None
             result = False
 
     else:

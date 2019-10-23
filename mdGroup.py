@@ -34,7 +34,8 @@ class Group:
         if response:
             if self.msg.startswith('/'):
                 resp = group_cmd(
-                    self.chat_id, self.msg, self.msg_id, self.reply_to, del_msg=self.delete, user_id=self.user_id)
+                    self.chat_id, self.msg, self.msg_id, self.reply_to, del_msg=self.delete, user_id=self.user_id,
+                    reply_to_user=self.reply_to_user)
             else:
                 if self.chat_id in localDB.chat:
                     if 'append' in localDB.chat[self.chat_id]:
