@@ -49,7 +49,7 @@ class Group:
                     resp = save_msg(self.chat_id, self.msg)
                     stat_receive(self.chat_id, self.user_id, 'msg')
                 if self.reply_to_user == self_id:
-                    group_cmd(self.chat_id, '/say', self.msg_id, self.msg_id, False, user_id=self.user_id)
+                    group_cmd(self.chat_id, '/say', self.msg_id, self.msg_id, False, self.delete, self.user_id)
             return resp
         else:
             return False

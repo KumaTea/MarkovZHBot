@@ -12,6 +12,9 @@ from botInfo import self_id, cool_threshold, trig_rate
 
 
 def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=True, user_id=None, reply_to_user=None):
+    """
+    chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=True, user_id=None, reply_to_user=None
+    """
     command = command[1:]
     is_admin = self_id in get_chat_admin(chat_id)
     sd_c = None
@@ -39,6 +42,7 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
     elif command.startswith('stat'):
         start_time = int(time.time() * 1000)
         msg = None
+        stat_receive(chat_id, user_id, 'cmd')
         re_c, m_msg, m_cmd, sd_c, kw, date, size = read_stat(chat_id)
         try:
             if date:
@@ -93,7 +97,7 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
             stat_receive(chat_id, user_id, 'cmd')
             if is_admin and del_cmd:
                 bot.delete(chat_id, msg_id).message()
-            result = bot.edit(chat_id, msg_id).message(msg)
+            result = bot.edit(chat_id, reply_to).message(msg)
         else:
             msg = None
             result = False
@@ -118,6 +122,8 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                 del_sent.start()
             except KeyError:
                 print('[ERROR] KeyError, ignoring...')
+        else:
+            print(f'[INFO] Not delete message for chat {chat_id}')
         if sd_c:
             if sd_c > cool_threshold and chat_id not in blacklist:
                 blacklist[chat_id] = trig_rate
