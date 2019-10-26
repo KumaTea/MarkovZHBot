@@ -6,9 +6,12 @@ from modelCache import name
 from mdStat import stat_receive, stat_send, read_stat
 import time
 import random
-import localDB
 from modelCache import blacklist
 from botInfo import self_id, cool_threshold, trig_rate
+try:
+    import localDB
+except ImportError:
+    import emptyLocalDB as localDB
 
 
 def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=True, user_id=None, reply_to_user=None):

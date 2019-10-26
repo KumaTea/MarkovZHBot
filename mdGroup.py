@@ -4,8 +4,11 @@ from markov import save_msg
 from botInfo import self_id
 from mdStat import stat_receive
 from modelCache import blacklist
-import localDB
 import random
+try:
+    import localDB
+except ImportError:
+    import emptyLocalDB as localDB
 
 
 class Group:

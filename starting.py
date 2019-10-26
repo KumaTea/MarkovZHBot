@@ -2,6 +2,7 @@ import os
 import requests
 import markovify
 from botSession import bot
+from tools import del_files
 from mdStat import reset_stat, read_stat
 from modelCache import models, blacklist
 from scheduler import scheduler
@@ -53,16 +54,6 @@ def mkdir(folder=None):
                 os.mkdir(str(folder))
 
 
-def del_admin(filename='admin'):
-    files = []
-    for i in os.listdir():
-        if os.path.isfile(i) and filename in i:
-            files.append(i)
-    for i in files:
-        os.remove(i)
-        print(f'[INFO] Deleted {i}')
-
-
 def pre_model(size=32768):
     files = []
     for i in os.listdir('data'):
@@ -90,9 +81,9 @@ def pre_blacklist():
 
 
 def starting():
-    mkdir('data')
-    mkdir('stat')
-    del_admin()
+    mkdir(['data', 'stat', 'admin'])
+    del_files('admin')
+    del_files('stat')
     webhook_url = get_webhook(port=4041)
     set_proxy(port=10080)
     set_webhook(webhook_url)

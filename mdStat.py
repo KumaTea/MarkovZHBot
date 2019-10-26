@@ -2,6 +2,7 @@ import os
 import json
 from datetime import datetime
 import modelCache
+from tools import del_files
 
 empty_stat_data = {
     'date': '',
@@ -18,13 +19,7 @@ empty_stat_data = {
 
 
 def reset_stat():
-    files = []
-    for i in os.listdir('stat'):
-        if os.path.isfile(f'stat/{i}'):
-            files.append(f'stat/{i}')
-    for i in files:
-        os.remove(i)
-        print(f'[INFO] Deleted {i}')
+    del_files('stat')
     modelCache.blacklist = {}
     print('[INFO] Stat reset.')
 
