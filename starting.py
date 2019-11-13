@@ -6,7 +6,7 @@ from tools import del_files
 from mdStat import reset_stat, read_stat
 from modelCache import models, blacklist
 from scheduler import scheduler
-from botInfo import cool_threshold, trig_rate
+from botInfo import cool_threshold, trig_rate, cache_size, large_size
 
 
 def getadminid():
@@ -54,7 +54,7 @@ def mkdir(folder=None):
                 os.mkdir(str(folder))
 
 
-def pre_model(size=32768):
+def pre_model(size=cache_size, large=large_size):
     files = []
     for i in os.listdir('data'):
         if os.path.isfile(f'data/{i}') and os.path.getsize(f'data/{i}') > size:
@@ -63,7 +63,10 @@ def pre_model(size=32768):
         chat_id = int(os.path.splitext(i)[0].replace('data/', ''))
         print(f'[INFO] Generating cached Markov model for chat {chat_id}.')
         with open(i, 'r', encoding='UTF-8') as f:
-            models[chat_id] = markovify.Text(f)
+            if os.path.getsize(i) > large:
+                models[chat_id] = markovify.Text(f, retain_original=False)
+            else:
+                models[chat_id] = markovify.Text(f)
         print(f'[INFO] Generated.')
 
 

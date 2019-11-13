@@ -1,7 +1,9 @@
+import os
 import jieba
 import markovify
 import random
 from modelCache import models
+from botInfo import large_size
 
 
 punctuation = ['，', '。', '？', '?']
@@ -52,7 +54,10 @@ def gen_msg(chat_id, space=False, cache=False, retry_times=10):
             sentence = gen_sentence(models[chat_id], space, 3)
         else:
             with open(f'data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
-                markov = markovify.Text(f)
+                if os.path.getsize('') > large_size:
+                    markov = markovify.Text(f, retain_original=False)
+                else:
+                    markov = markovify.Text(f)
                 sentence = gen_sentence(markov, space, 3)
                 models[chat_id] = markov
             print(f'[INFO] Generated new model for {chat_id}')
