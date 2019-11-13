@@ -84,11 +84,14 @@ def starting():
     mkdir(['data', 'stat', 'admin'])
     del_files('admin')
     del_files('stat')
-    webhook_url = get_webhook(port=4041)
-    set_proxy(port=10080)
-    set_webhook(webhook_url)
+    if 'nt' in os.name:
+        webhook_url = get_webhook(port=4041)
+        set_proxy(port=10080)
+        set_webhook(webhook_url)
+    else:
+        webhook_url = get_webhook()
+        set_webhook(webhook_url)
     pre_model()
-    pre_blacklist()
     scheduler.add_job(reset_stat, 'cron', hour=0, minute=0)
     scheduler.start()
     print('[INFO] Starting fine.')

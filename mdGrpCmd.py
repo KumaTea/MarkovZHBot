@@ -63,7 +63,7 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                 else:
                     m_cmd_u = bot.query(chat_id).chat_member(m_cmd)
                     mc_f, mc_l = m_cmd_u['first_name'], m_cmd_u.get('last_name', '')
-                    name[m_cmd] = mm_f, mm_l
+                    name[m_cmd] = mc_f, mc_l
 
                 stat_msg = f'今天是{date}，以下是数据报告：\n' \
                            f'我共学习{re_c}次，说话{sd_c}次。kw' \
@@ -121,7 +121,7 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
         if del_msg:
             try:
                 sent_meg = bot.get(result).message('id')
-                del_sent = Timer(1800, bot.delete(chat_id).message, [sent_meg])
+                del_sent = Timer(21600, bot.delete(chat_id).message, [sent_meg])
                 del_sent.start()
             except KeyError:
                 print('[ERROR] KeyError, ignoring...')

@@ -45,6 +45,9 @@ class Group:
                         resp = save_msg(self.chat_id, self.msg)
                         save_msg(localDB.chat[self.chat_id]['append'], self.msg)
                         stat_receive(self.chat_id, self.user_id, 'msg')
+                    elif 'combine' in localDB.chat[self.chat_id]:
+                        resp = save_msg(localDB.chat[self.chat_id]['combine'], self.msg)
+                        stat_receive(self.chat_id, self.user_id, 'msg')
                     else:
                         resp = save_msg(self.chat_id, self.msg)
                         stat_receive(self.chat_id, self.user_id, 'msg')
