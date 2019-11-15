@@ -53,13 +53,14 @@ def gen_msg(chat_id, space=False, cache=False, retry_times=10):
         if random.random() > 0.1:
             sentence = gen_sentence(models[chat_id], space, 3)
         else:
-            with open(f'data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
-                if os.path.getsize('') > large_size:
+            if os.path.getsize(f'data/{chat_id}.txt') > large_size:
+                with open(f'data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
                     markov = markovify.Text(f, retain_original=False)
-                else:
+            else:
+                with open(f'data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
                     markov = markovify.Text(f)
-                sentence = gen_sentence(markov, space, 3)
-                models[chat_id] = markov
+            sentence = gen_sentence(markov, space, 3)
+            models[chat_id] = markov
             print(f'[INFO] Generated new model for {chat_id}')
         return sentence
     else:

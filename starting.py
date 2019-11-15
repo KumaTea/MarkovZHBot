@@ -89,7 +89,7 @@ def starting():
     del_files('stat')
     if 'nt' in os.name:
         webhook_url = get_webhook(port=4041)
-        set_proxy(port=10080)
+        set_proxy()
         set_webhook(webhook_url)
     else:
         webhook_url = get_webhook()
