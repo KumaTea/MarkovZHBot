@@ -45,7 +45,14 @@ def gen_sentence(model, space, retry_times=10):
     if space:
         return sentence
     else:
-        return sentence.replace(' ', '')
+        # English determination
+        words = sentence.split(' ')
+        for item in words:
+            if item.encode('UTF-8').isalpha():
+                sentence += f' {item} '
+            else:
+                sentence += item
+        return sentence.replace('  ', ' ')
 
 
 def gen_msg(chat_id, space=False, cache=False, retry_times=10):

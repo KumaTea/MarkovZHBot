@@ -92,7 +92,7 @@ def starting():
         set_proxy()
         set_webhook(webhook_url)
     else:
-        webhook_url = get_webhook()
+        webhook_url = get_webhook(port=4041)
         set_webhook(webhook_url)
     pre_model()
     scheduler.add_job(reset_stat, 'cron', hour=0, minute=0)
