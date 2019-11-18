@@ -8,15 +8,29 @@ from localDB import chat
 
 
 punctuation = ['，', '。', '？', '?']
+punctuation_en = [',', '.', '?', '!', '_']
 ignore = ['http', '【', 'likenum', '#']
 ignore_starting = ['@']
 error_msg = '生成句子失败了，请重试。'
 
 
-def msg_format(message):
+def format_in(message):
     for item in punctuation:
         message = message.replace(f'{item} {item} {item}', f'{item}{item}{item}')
     return message
+
+
+def format_out(sentence):
+    words = sentence.split(' ')
+    new_sen = ''
+    for item in words:
+        if item.encode('UTF-8').isalpha():
+            new_sen += f' {item} '
+        else:
+            new_sen += item
+    for item in punctuation_en:
+        new_sen = new_sen.replace(f' {item} ', f'{item} ')
+    return new_sen.replace('  ', ' ').replace('@ ', ' @')
 
 
 def save_msg(chat_id, message):
@@ -29,13 +43,13 @@ def save_msg(chat_id, message):
             save = False
     if save:
         cut_message = (' '.join(jieba.cut(message)))
-        format_message = msg_format(cut_message)
+        format_message = format_in(cut_message)
         with open(f'data/{chat_id}.txt', 'a', encoding='UTF-8') as f:
             f.write(f'\n{format_message}')
     return True
 
 
-def gen_sentence(model, space, retry_times=10):
+def gen_sentence(model, space='English', retry_times=10):
     sentence = model.make_sentence()
     retry = 0
     while not sentence:
@@ -43,21 +57,16 @@ def gen_sentence(model, space, retry_times=10):
         retry += 1
         if retry > retry_times:
             return error_msg
-    if space:
+    if space == 'English':
+        # English determination
+        return format_out(sentence)
+    elif space:
         return sentence
     else:
-        # English determination
-        words = sentence.split(' ')
-        new_sen = ''
-        for item in words:
-            if item.encode('UTF-8').isalpha():
-                new_sen += f' {item} '
-            else:
-                new_sen += item
-        return new_sen.replace('  ', ' ')
+        return sentence.replace(' ', '')
 
 
-def gen_msg(chat_id, space=False, cache=False, retry_times=10):
+def gen_msg(chat_id, space='English', cache=False, retry_times=10):
     if chat_id in chat:
         if 'combine' in chat[chat_id]:
             chat_id = chat[chat_id]['combine']
