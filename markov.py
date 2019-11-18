@@ -4,6 +4,7 @@ import markovify
 import random
 from modelCache import models
 from botInfo import large_size
+from localDB import chat
 
 
 punctuation = ['，', '。', '？', '?']
@@ -47,15 +48,19 @@ def gen_sentence(model, space, retry_times=10):
     else:
         # English determination
         words = sentence.split(' ')
+        new_sen = ''
         for item in words:
             if item.encode('UTF-8').isalpha():
-                sentence += f' {item} '
+                new_sen += f' {item} '
             else:
-                sentence += item
-        return sentence.replace('  ', ' ')
+                new_sen += item
+        return new_sen.replace('  ', ' ')
 
 
 def gen_msg(chat_id, space=False, cache=False, retry_times=10):
+    if chat_id in chat:
+        if 'combine' in chat[chat_id]:
+            chat_id = chat[chat_id]['combine']
     if cache or chat_id in models:
         if random.random() > 0.1:
             sentence = gen_sentence(models[chat_id], space, 3)
