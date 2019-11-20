@@ -1,6 +1,6 @@
 name = 'Markov Bot'
 self_id = 648433061
-version = '0.5.7.2'
+version = '0.5.7.4'
 channel = 'local'
 repo = 'https://github.com/oudoubleyang/MarkovZHBot'
 

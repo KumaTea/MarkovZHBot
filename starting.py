@@ -86,7 +86,7 @@ def pre_blacklist():
 def starting():
     mkdir(['data', 'stat', 'admin'])
     del_files('admin')
-    del_files('stat')
+    # del_files('stat')
     if 'nt' in os.name:
         webhook_url = get_webhook(port=4041)
         set_proxy()

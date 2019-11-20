@@ -3,6 +3,7 @@ import json
 from datetime import datetime
 import modelCache
 from tools import del_files
+from localDB import chat
 
 empty_stat_data = {
     'date': '',
@@ -104,7 +105,14 @@ def read_stat(chat_id):
     m_cmd = most(stat_data['receive']['cmd_by'])
     sd_c = stat_data['send']['count']
     date = stat_data['date']
-    size = os.path.getsize(f'data/{chat_id}.txt')
+    if chat_id in chat:
+        if 'combine' in chat[chat_id]:
+            comb_chat = chat[chat_id]['combine']
+            size = os.path.getsize(f'data/{comb_chat}.txt')
+        else:
+            size = os.path.getsize(f'data/{chat_id}.txt')
+    else:
+        size = os.path.getsize(f'data/{chat_id}.txt')
     if size > 1048576:
         f_size = f'{round(size/1048576, 2)}MB'
     elif size > 1024:

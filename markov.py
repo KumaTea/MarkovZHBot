@@ -7,15 +7,16 @@ from botInfo import large_size
 from localDB import chat
 
 
-punctuation = ['，', '。', '？', '?']
-punctuation_en = [',', '.', '?', '!', '_']
+punctuation_zh = ['，', '。', '？', '！']
+punctuation_en = [',', '.', '?', '!']
+no_space = ['_']
 ignore = ['http', '【', 'likenum', '#']
 ignore_starting = ['@']
 error_msg = '生成句子失败了，请重试。'
 
 
 def format_in(message):
-    for item in punctuation:
+    for item in punctuation_zh:
         message = message.replace(f'{item} {item} {item}', f'{item}{item}{item}')
     return message
 
@@ -30,7 +31,10 @@ def format_out(sentence):
             new_sen += item
     for item in punctuation_en:
         new_sen = new_sen.replace(f' {item} ', f'{item} ')
-    return new_sen.replace('  ', ' ').replace('@ ', ' @')
+    for item in no_space:
+        new_sen = new_sen.replace(f'{item} ', f'{item}').replace(f' {item}', f'{item}')
+    new_sen = new_sen.replace('@ ', ' @').replace('  ', ' ')
+    return new_sen
 
 
 def save_msg(chat_id, message):
