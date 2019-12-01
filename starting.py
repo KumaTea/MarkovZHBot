@@ -1,22 +1,13 @@
 import os
+import json
 import requests
 import markovify
-from botSession import bot
-from tools import del_files
-from mdStat import reset_stat, read_stat
-from modelCache import models, blacklist
-from scheduler import scheduler
-from botInfo import cool_threshold, trig_rate, cache_size, large_size
-
-
-def getadminid():
-    adminex = os.path.isfile('adminid.txt')
-    if adminex:
-        with open('adminid.txt', 'r') as admid:
-            adminid = list(map(int, admid.readlines()))
-    else:
-        adminid = [0]  # not set!
-    return adminid
+from botSession import bot, scheduler
+from mdStat import read_stat
+from tools import reset_cache, reset_triggered_user, remove_inactive_chats
+from diskIO import write_msg, write_stat
+from botCache import models, black_chats, stat_db
+from botInfo import chat_cool_threshold, bl_trig_rate, cache_size, large_size
 
 
 def set_proxy(ip='127.0.0.1', port=1080, protocol='http'):
@@ -72,21 +63,21 @@ def pre_model(size=cache_size, large=large_size):
 
 def pre_blacklist():
     chats = []
-    for i in os.listdir('data'):
-        if os.path.isfile(f'data/{i}'):
-            chats.append(int(i.replace('.txt', '')))
+    for i in os.listdir('stat'):
+        if os.path.isfile(f'stat/{i}'):
+            chats.append(int(i.replace('.json', '')))
     for i in chats:
+        with open(f'stat/{i}.json', 'r') as f:
+            stat_db[i] = json.load(f)
+    for i in stat_db:
         re_c, m_msg, m_cmd, sd_c, kw, date, size = read_stat(i)
-        if sd_c:
-            if sd_c > cool_threshold:
-                blacklist[i] = trig_rate
-                print(f'[INFO] Chat {i} in blacklist today...')
+        if sd_c and sd_c > chat_cool_threshold:
+            black_chats[i] = bl_trig_rate
+            print(f'[INFO] Chat {i} in blacklist today...')
 
 
 def starting():
-    mkdir(['data', 'stat', 'admin'])
-    del_files('admin')
-    # del_files('stat')
+    mkdir(['data', 'stat'])
     if 'nt' in os.name:
         webhook_url = get_webhook(port=4041)
         set_proxy()
@@ -95,6 +86,11 @@ def starting():
         webhook_url = get_webhook(port=4041)
         set_webhook(webhook_url)
     pre_model()
-    scheduler.add_job(reset_stat, 'cron', hour=0, minute=0)
+
+    scheduler.add_job(write_stat, 'cron', minute='*/30')
+    scheduler.add_job(write_msg, 'cron', minute='*/15')
+    scheduler.add_job(reset_cache, 'cron', hour=0, minute=2)
+    scheduler.add_job(remove_inactive_chats, 'cron', hour=0, minute=3)
+    scheduler.add_job(reset_triggered_user, 'cron', minute=1)
     scheduler.start()
     print('[INFO] Starting fine.')

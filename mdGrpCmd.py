@@ -2,12 +2,12 @@ from botSession import bot
 from markov import gen_msg
 from tools import get_chat_admin
 from threading import Timer
-from modelCache import name
+from botCache import names
 from mdStat import stat_receive, stat_send, read_stat
-import time
+from time import time
 import random
-from modelCache import blacklist
-from botInfo import self_id, cool_threshold, trig_rate
+from botCache import black_chats
+from botInfo import self_id, chat_cool_threshold, bl_trig_rate, renew_rate
 try:
     import localDB
 except ImportError:
@@ -43,7 +43,7 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
             result = bot.send(chat_id).message(msg)
 
     elif command.startswith('stat'):
-        start_time = int(time.time() * 1000)
+        start_time = int(time() * 1000)
         msg = None
         stat_receive(chat_id, user_id, 'cmd')
         re_c, m_msg, m_cmd, sd_c, kw, date, size = read_stat(chat_id)
@@ -52,18 +52,18 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                 start_msg = '查询统计数据中，请稍后。。。'
                 sent_start = bot.send(chat_id).message(start_msg)
                 sent_start_id = bot.get(sent_start).message('id')
-                if m_msg in name:
-                    mm_f, mm_l = name[m_msg]
+                if m_msg in names:
+                    mm_f, mm_l = names[m_msg]
                 else:
                     m_msg_u = bot.query(chat_id).chat_member(m_msg)
                     mm_f, mm_l = m_msg_u['first_name'], m_msg_u.get('last_name', '')
-                    name[m_msg] = mm_f, mm_l
-                if m_cmd in name:
-                    mc_f, mc_l = name[m_cmd]
+                    names[m_msg] = mm_f, mm_l
+                if m_cmd in names:
+                    mc_f, mc_l = names[m_cmd]
                 else:
                     m_cmd_u = bot.query(chat_id).chat_member(m_cmd)
                     mc_f, mc_l = m_cmd_u['first_name'], m_cmd_u.get('last_name', '')
-                    name[m_cmd] = mc_f, mc_l
+                    names[m_cmd] = mc_f, mc_l
 
                 stat_msg = f'今天是{date}，以下是数据报告：\n' \
                            f'我共学习{re_c}次，说话{sd_c}次。kw' \
@@ -79,12 +79,10 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                     to_send = stat_msg.replace('kw', '')
                 if (mm_f, mm_l) == (mc_f, mc_l):
                     to_send = to_send.replace('让我说话最多的是', '让我说话最多的也是')
-                if chat_id in localDB.chat:
-                    if 'replace' in localDB.chat[chat_id]:
-                        if localDB.chat[chat_id]['replace']:
-                            for i in localDB.chat[chat_id]['replace']:
-                                to_send = to_send.replace(i, localDB.chat[chat_id]['replace'][i])
-                end_time = int(time.time() * 1000)
+                if chat_id in localDB.chat and 'replace' in localDB.chat[chat_id] and localDB.chat[chat_id]['replace']:
+                    for i in localDB.chat[chat_id]['replace']:
+                        to_send = to_send.replace(i, localDB.chat[chat_id]['replace'][i])
+                end_time = int(time() * 1000)
                 to_send = to_send.replace('delayed_time_length', str((end_time - start_time) / 1000))
                 result = bot.edit(chat_id, sent_start_id).message(to_send)
             else:
@@ -127,18 +125,16 @@ def group_cmd(chat_id, command, msg_id, reply_to=None, del_cmd=True, del_msg=Tru
                 print('[ERROR] KeyError, ignoring...')
         else:
             print(f'[INFO] Not delete message for chat {chat_id}')
-        if sd_c:
-            if sd_c > cool_threshold and chat_id not in blacklist:
-                blacklist[chat_id] = trig_rate
-                bot.send(chat_id).message(f'由于本群今日触发量超过{cool_threshold}，本群已于今日进入冷却名单。')
-                print(f'[INFO] Adding {chat_id} into blacklist...')
+        if sd_c and sd_c > chat_cool_threshold and chat_id not in black_chats:
+            black_chats[chat_id] = bl_trig_rate
+            bot.send(chat_id).message(f'由于本群今日触发量超过{chat_cool_threshold}，本群已于今日进入冷却名单。')
+            print(f'[INFO] Adding {chat_id} into blacklist...')
         else:
-            if random.random() > 0.9:
+            if random.random() < renew_rate:
                 re_c, m_msg, m_cmd, sd_c, kw, date, size = read_stat(chat_id)
-                if sd_c:
-                    if sd_c > cool_threshold and chat_id not in blacklist:
-                        blacklist[chat_id] = trig_rate
-                        print(f'[INFO] Adding {chat_id} into blacklist...')
-                        bot.send(chat_id).message(f'由于本群今日触发量超过{cool_threshold}，本群已于今日进入冷却名单。')
+                if sd_c and sd_c > chat_cool_threshold and chat_id not in black_chats:
+                    black_chats[chat_id] = bl_trig_rate
+                    print(f'[INFO] Adding {chat_id} into blacklist...')
+                    bot.send(chat_id).message(f'由于本群今日触发量超过{chat_cool_threshold}，本群已于今日进入冷却名单。')
 
     return result

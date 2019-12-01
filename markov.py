@@ -1,10 +1,10 @@
-import os
 import jieba
 import markovify
 import random
-from modelCache import models
-from botInfo import large_size
+from botCache import models, msg_db
+from botInfo import renew_rate
 from localDB import chat
+from diskIO import renew_model
 
 
 punctuation_zh = ['，', '。', '？', '！']
@@ -48,8 +48,10 @@ def save_msg(chat_id, message):
     if save:
         cut_message = (' '.join(jieba.cut(message)))
         format_message = format_in(cut_message)
-        with open(f'data/{chat_id}.txt', 'a', encoding='UTF-8') as f:
-            f.write(f'\n{format_message}')
+        if chat_id in msg_db:
+            msg_db[chat_id] += f'{format_message}\n'
+        else:
+            msg_db[chat_id] = f'{format_message}\n'
     return True
 
 
@@ -71,22 +73,12 @@ def gen_sentence(model, space='English', retry_times=10):
 
 
 def gen_msg(chat_id, space='English', cache=False, retry_times=10):
-    if chat_id in chat:
-        if 'combine' in chat[chat_id]:
-            chat_id = chat[chat_id]['combine']
+    if chat_id in chat and 'combine' in chat[chat_id]:
+        chat_id = chat[chat_id]['combine']
     if cache or chat_id in models:
-        if random.random() > 0.1:
-            sentence = gen_sentence(models[chat_id], space, 3)
-        else:
-            if os.path.getsize(f'data/{chat_id}.txt') > large_size:
-                with open(f'data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
-                    markov = markovify.Text(f, retain_original=False)
-            else:
-                with open(f'data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
-                    markov = markovify.Text(f)
-            sentence = gen_sentence(markov, space, 3)
-            models[chat_id] = markov
-            print(f'[INFO] Generated new model for {chat_id}')
+        if random.random() < renew_rate:
+            renew_model(chat_id)
+        sentence = gen_sentence(models[chat_id], space, 3)
         return sentence
     else:
         try:

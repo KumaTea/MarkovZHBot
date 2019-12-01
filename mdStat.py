@@ -1,8 +1,7 @@
 import os
 import json
 from datetime import datetime
-import modelCache
-from tools import del_files
+from botCache import stat_db, triggered_users
 from localDB import chat
 
 empty_stat_data = {
@@ -19,27 +18,18 @@ empty_stat_data = {
 }
 
 
-def reset_stat():
-    del_files('stat')
-    modelCache.blacklist = {}
-    print('[INFO] Stat reset.')
-
-
 def new_stat(chat_id):
     stat_data = empty_stat_data
     stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
+    stat_db[chat_id] = stat_data
     with open(f'stat/{chat_id}.json', 'w') as file:
         json.dump(stat_data, file)
 
 
 def stat_receive(chat_id, user_id, msg_type):
-    try:
-        with open(f'stat/{chat_id}.json', 'r') as f:
-            stat_data = json.load(f)
-    except FileNotFoundError:
-        stat_data = empty_stat_data
-        stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
-    except json.decoder.JSONDecodeError:
+    if chat_id in stat_db:
+        stat_data = stat_db[chat_id]
+    else:
         stat_data = empty_stat_data
         stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
 
@@ -47,20 +37,16 @@ def stat_receive(chat_id, user_id, msg_type):
     if 'message' in msg_type or 'msg' in msg_type:
         stat_data['receive']['msg_by'].append(user_id)
     else:
+        triggered_users.append(user_id)
         stat_data['receive']['cmd_by'].append(user_id)
 
-    with open(f'stat/{chat_id}.json', 'w') as f:
-        json.dump(stat_data, f)
+    stat_db[chat_id] = stat_data
 
 
 def stat_send(chat_id, keyword=False):
-    try:
-        with open(f'stat/{chat_id}.json', 'r') as f:
-            stat_data = json.load(f)
-    except FileNotFoundError:
-        stat_data = empty_stat_data
-        stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
-    except json.decoder.JSONDecodeError:
+    if chat_id in stat_db:
+        stat_data = stat_db[chat_id]
+    else:
         stat_data = empty_stat_data
         stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
 
@@ -69,8 +55,7 @@ def stat_send(chat_id, keyword=False):
         kw_count = stat_data['send']['keyword'].get(keyword, 0)
         stat_data['send']['keyword'][keyword] = kw_count + 1
 
-    with open(f'stat/{chat_id}.json', 'w') as f:
-        json.dump(stat_data, f)
+    stat_db[chat_id] = stat_data
 
 
 def most(from_list):
@@ -88,12 +73,9 @@ def most(from_list):
 
 
 def read_stat(chat_id):
-    try:
-        with open(f'stat/{chat_id}.json', 'r') as f:
-            stat_data = json.load(f)
-    except FileNotFoundError:
-        return None, None, None, None, None, None, None
-    except json.decoder.JSONDecodeError:
+    if chat_id in stat_db:
+        stat_data = stat_db[chat_id]
+    else:
         return None, None, None, None, None, None, None
 
     if stat_data['send']['keyword']:
