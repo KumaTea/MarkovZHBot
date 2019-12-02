@@ -9,6 +9,7 @@ def write_msg():
     for chat in botCache.msg_db:
         with open(f'data/{chat}.txt', 'a', encoding='UTF-8') as f:
             f.write(botCache.msg_db[chat])
+        print(f'[INFO] Wrote message of {chat}.')
     botCache.msg_db = {}
     return True
 
@@ -17,6 +18,7 @@ def write_stat():
     for chat in botCache.stat_db:
         with open(f'stat/{chat}.json', 'w') as f:
             json.dump(botCache.stat_db[chat], f)
+        print(f'[INFO] Wrote stat of {chat}.')
     botCache.stat_db = {}
     return True
 

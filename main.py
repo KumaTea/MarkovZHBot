@@ -2,12 +2,16 @@ from flask import Flask, request as flaskreq
 from msgType import msg_type
 from starting import starting
 import logging
+from botSession import scheduler
 
 
 app = Flask(__name__)
 
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
+
+starting()
+scheduler.start()
 
 
 @app.route('/', methods=['POST'])
@@ -17,8 +21,6 @@ def main():
     resp = msg_type(data)
     return '', 200
 
-
-starting()
 
 # If run on local machine:
 if __name__ == '__main__':

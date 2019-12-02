@@ -1,5 +1,4 @@
 import os
-import json
 from datetime import datetime
 from botCache import stat_db, triggered_users
 from localDB import chat
@@ -16,14 +15,6 @@ empty_stat_data = {
         'keyword': {},
     },
 }
-
-
-def new_stat(chat_id):
-    stat_data = empty_stat_data
-    stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
-    stat_db[chat_id] = stat_data
-    with open(f'stat/{chat_id}.json', 'w') as file:
-        json.dump(stat_data, file)
 
 
 def stat_receive(chat_id, user_id, msg_type):

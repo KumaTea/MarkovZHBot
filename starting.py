@@ -64,7 +64,7 @@ def pre_model(size=cache_size, large=large_size):
 def pre_blacklist():
     chats = []
     for i in os.listdir('stat'):
-        if os.path.isfile(f'stat/{i}'):
+        if os.path.isfile(f'stat/{i}') and not i.startswith('.'):
             chats.append(int(i.replace('.json', '')))
     for i in chats:
         with open(f'stat/{i}.json', 'r') as f:
@@ -79,18 +79,22 @@ def pre_blacklist():
 def starting():
     mkdir(['data', 'stat'])
     if 'nt' in os.name:
-        webhook_url = get_webhook(port=4041)
+        webhook_url = get_webhook()
         set_proxy()
+        set_webhook(webhook_url)
+    elif 'posix' in os.name:  # Mac
+        webhook_url = get_webhook()
+        set_proxy(port=1082)
         set_webhook(webhook_url)
     else:
         webhook_url = get_webhook(port=4041)
         set_webhook(webhook_url)
     pre_model()
+    pre_blacklist()
 
     scheduler.add_job(write_stat, 'cron', minute='*/30')
     scheduler.add_job(write_msg, 'cron', minute='*/15')
     scheduler.add_job(reset_cache, 'cron', hour=0, minute=2)
     scheduler.add_job(remove_inactive_chats, 'cron', hour=0, minute=3)
     scheduler.add_job(reset_triggered_user, 'cron', minute=1)
-    scheduler.start()
     print('[INFO] Starting fine.')
