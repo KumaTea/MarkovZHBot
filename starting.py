@@ -6,7 +6,7 @@ from botSession import bot, scheduler
 from mdStat import read_stat
 from tools import reset_cache, reset_triggered_user, remove_inactive_chats
 from diskIO import write_msg, write_stat
-from botCache import models, black_chats, stat_db
+import botCache
 from botInfo import chat_cool_threshold, bl_trig_rate, cache_size, large_size
 
 
@@ -55,9 +55,9 @@ def pre_model(size=cache_size, large=large_size):
         print(f'[INFO] Generating cached Markov model for chat {chat_id}.')
         with open(i, 'r', encoding='UTF-8') as f:
             if os.path.getsize(i) > large:
-                models[chat_id] = markovify.Text(f, retain_original=False)
+                botCache.models[chat_id] = markovify.Text(f, retain_original=False)
             else:
-                models[chat_id] = markovify.Text(f)
+                botCache.models[chat_id] = markovify.Text(f)
         print(f'[INFO] Generated.')
 
 
@@ -68,11 +68,11 @@ def pre_blacklist():
             chats.append(int(i.replace('.json', '')))
     for i in chats:
         with open(f'stat/{i}.json', 'r') as f:
-            stat_db[i] = json.load(f)
-    for i in stat_db:
+            botCache.stat_db[i] = json.load(f)
+    for i in botCache.stat_db:
         re_c, m_msg, m_cmd, sd_c, kw, date, size = read_stat(i)
         if sd_c and sd_c > chat_cool_threshold:
-            black_chats[i] = bl_trig_rate
+            botCache.black_chats[i] = bl_trig_rate
             print(f'[INFO] Chat {i} in blacklist today...')
 
 
@@ -97,4 +97,5 @@ def starting():
     scheduler.add_job(reset_cache, 'cron', hour=0, minute=2)
     scheduler.add_job(remove_inactive_chats, 'cron', hour=0, minute=3)
     scheduler.add_job(reset_triggered_user, 'cron', minute=1)
+    scheduler.start()
     print('[INFO] Starting fine.')

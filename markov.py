@@ -1,7 +1,7 @@
 import jieba
 import markovify
 import random
-from botCache import models, msg_db
+import botCache
 from botInfo import renew_rate
 from localDB import chat
 from diskIO import renew_model
@@ -48,10 +48,10 @@ def save_msg(chat_id, message):
     if save:
         cut_message = (' '.join(jieba.cut(message)))
         format_message = format_in(cut_message)
-        if chat_id in msg_db:
-            msg_db[chat_id] += f'{format_message}\n'
+        if chat_id in botCache.msg_db:
+            botCache.msg_db[chat_id] += f'{format_message}\n'
         else:
-            msg_db[chat_id] = f'{format_message}\n'
+            botCache.msg_db[chat_id] = f'{format_message}\n'
     return True
 
 
@@ -75,10 +75,10 @@ def gen_sentence(model, space='English', retry_times=10):
 def gen_msg(chat_id, space='English', cache=False, retry_times=10):
     if chat_id in chat and 'combine' in chat[chat_id]:
         chat_id = chat[chat_id]['combine']
-    if cache or chat_id in models:
+    if cache or chat_id in botCache.models:
         if random.random() < renew_rate:
             renew_model(chat_id)
-        sentence = gen_sentence(models[chat_id], space, 3)
+        sentence = gen_sentence(botCache.models[chat_id], space, 3)
         return sentence
     else:
         try:

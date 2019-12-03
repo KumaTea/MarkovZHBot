@@ -3,7 +3,7 @@ from mdGrpCmd import group_cmd
 from markov import save_msg
 from botInfo import self_id, user_cool_threshold
 from mdStat import stat_receive
-from botCache import black_chats, triggered_users
+import botCache
 import random
 try:
     import localDB
@@ -26,10 +26,10 @@ class Group:
             if self.chat_id in localDB.chat else True
 
     def text(self):
-        if triggered_users.count(self.user_id) > user_cool_threshold:
+        if botCache.triggered_users.count(self.user_id) > user_cool_threshold:
             response = False
-        elif self.chat_id in black_chats:
-            if random.random() < black_chats[self.chat_id]:
+        elif self.chat_id in botCache.black_chats:
+            if random.random() < botCache.black_chats[self.chat_id]:
                 response = True
             else:
                 print('[INFO] Ignoring chat in blacklist...')

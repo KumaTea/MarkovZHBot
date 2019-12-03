@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from botCache import stat_db, triggered_users
+import botCache
 from localDB import chat
 
 empty_stat_data = {
@@ -18,8 +18,8 @@ empty_stat_data = {
 
 
 def stat_receive(chat_id, user_id, msg_type):
-    if chat_id in stat_db:
-        stat_data = stat_db[chat_id]
+    if chat_id in botCache.stat_db:
+        stat_data = botCache.stat_db[chat_id]
     else:
         stat_data = empty_stat_data
         stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
@@ -28,15 +28,15 @@ def stat_receive(chat_id, user_id, msg_type):
     if 'message' in msg_type or 'msg' in msg_type:
         stat_data['receive']['msg_by'].append(user_id)
     else:
-        triggered_users.append(user_id)
+        botCache.triggered_users.append(user_id)
         stat_data['receive']['cmd_by'].append(user_id)
 
-    stat_db[chat_id] = stat_data
+    botCache.stat_db[chat_id] = stat_data
 
 
 def stat_send(chat_id, keyword=False):
-    if chat_id in stat_db:
-        stat_data = stat_db[chat_id]
+    if chat_id in botCache.stat_db:
+        stat_data = botCache.stat_db[chat_id]
     else:
         stat_data = empty_stat_data
         stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
@@ -46,7 +46,7 @@ def stat_send(chat_id, keyword=False):
         kw_count = stat_data['send']['keyword'].get(keyword, 0)
         stat_data['send']['keyword'][keyword] = kw_count + 1
 
-    stat_db[chat_id] = stat_data
+    botCache.stat_db[chat_id] = stat_data
 
 
 def most(from_list):
@@ -64,8 +64,8 @@ def most(from_list):
 
 
 def read_stat(chat_id):
-    if chat_id in stat_db:
-        stat_data = stat_db[chat_id]
+    if chat_id in botCache.stat_db:
+        stat_data = botCache.stat_db[chat_id]
     else:
         return None, None, None, None, None, None, None
 
