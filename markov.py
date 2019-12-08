@@ -8,8 +8,9 @@ from diskIO import renew_model
 
 
 punctuation_zh = ['，', '。', '？', '！']
-punctuation_en = [',', '.', '?', '!']
-no_space = ['_']
+punctuation_en = [',', '?', '!']
+no_space = ['_', '.']
+switch_space = ['@', '/']
 ignore = ['http', '【', 'likenum', '#']
 ignore_starting = ['@']
 error_msg = '生成句子失败了，请重试。'
@@ -33,7 +34,9 @@ def format_out(sentence):
         new_sen = new_sen.replace(f' {item} ', f'{item} ')
     for item in no_space:
         new_sen = new_sen.replace(f'{item} ', f'{item}').replace(f' {item}', f'{item}')
-    new_sen = new_sen.replace('@ ', ' @').replace('  ', ' ')
+    for item in switch_space:
+        new_sen = new_sen.replace(f'{item} ', f' {item}')
+    new_sen = new_sen.replace('  ', ' ')
     return new_sen
 
 

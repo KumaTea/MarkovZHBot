@@ -1,4 +1,5 @@
 import os
+import sys
 import json
 import requests
 import markovify
@@ -78,15 +79,15 @@ def pre_blacklist():
 
 def starting():
     mkdir(['data', 'stat'])
-    if 'nt' in os.name:
+    if 'win32' in sys.platform:
         webhook_url = get_webhook()
         set_proxy()
         set_webhook(webhook_url)
-    elif 'posix' in os.name:  # Mac
+    elif 'darwin' in sys.platform:
         webhook_url = get_webhook()
         set_proxy(port=1082)
         set_webhook(webhook_url)
-    else:
+    else:  # Linux
         webhook_url = get_webhook(port=4041)
         set_webhook(webhook_url)
     pre_model()

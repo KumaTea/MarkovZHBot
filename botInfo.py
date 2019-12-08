@@ -1,6 +1,6 @@
 name = 'Markov Bot'
 self_id = 648433061
-version = '0.6.3'
+version = '0.6.4'
 channel = 'local'
 repo = 'https://github.com/oudoubleyang/MarkovZHBot'
 
@@ -11,6 +11,6 @@ chat_cool_threshold = 500
 bl_trig_rate = 0.01
 
 cache_size = 32768
-large_size = 262144  # 1048576
+large_size = 1048576  # 262144  # 1048576
 
 chat_expire_time = 604800  # 7 days

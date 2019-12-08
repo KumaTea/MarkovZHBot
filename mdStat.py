@@ -3,25 +3,17 @@ from datetime import datetime
 import botCache
 from localDB import chat
 
-empty_stat_data = {
-    'date': '',
-    'receive': {
-        'count': 0,
-        'msg_by': [],
-        'cmd_by': [],
-    },
-    'send': {
-        'count': 0,
-        'keyword': {},
-    },
-}
+
+def empty_stat_data():
+    return {'receive': {'count': 0, 'msg_by': [], 'cmd_by': []}, 'send': {'count': 0, 'keyword': {}}}
 
 
 def stat_receive(chat_id, user_id, msg_type):
     if chat_id in botCache.stat_db:
         stat_data = botCache.stat_db[chat_id]
     else:
-        stat_data = empty_stat_data
+        stat_data = empty_stat_data()
+        stat_data['chat_id'] = chat_id
         stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
 
     stat_data['receive']['count'] += 1
@@ -38,7 +30,8 @@ def stat_send(chat_id, keyword=False):
     if chat_id in botCache.stat_db:
         stat_data = botCache.stat_db[chat_id]
     else:
-        stat_data = empty_stat_data
+        stat_data = empty_stat_data()
+        stat_data['chat_id'] = chat_id
         stat_data['date'] = datetime.now().strftime('%Y-%m-%d')
 
     stat_data['send']['count'] += 1
