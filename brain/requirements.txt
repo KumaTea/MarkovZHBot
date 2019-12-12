@@ -1,6 +1,5 @@
 requests
 flask
-tgapi
 jieba
 markovify
 apscheduler

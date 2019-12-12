@@ -9,3 +9,5 @@ token*
 data
 local*
 stat
+ssl
+.DS_STORE

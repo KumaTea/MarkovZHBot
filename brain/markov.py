@@ -1,10 +1,13 @@
 import jieba
 import markovify
 import random
-import botCache
-from botInfo import renew_rate
-from localDB import chat
+import brainCache
+from brainInfo import renew_rate
 from diskIO import renew_model
+try:
+    from localDB import chat
+except ImportError:
+    from emptyLocalDB import chat
 
 
 punctuation_zh = ['，', '。', '？', '！']
@@ -51,10 +54,10 @@ def save_msg(chat_id, message):
     if save:
         cut_message = (' '.join(jieba.cut(message)))
         format_message = format_in(cut_message)
-        if chat_id in botCache.msg_db:
-            botCache.msg_db[chat_id] += f'{format_message}\n'
+        if chat_id in brainCache.msg_db:
+            brainCache.msg_db[chat_id] += f'{format_message}\n'
         else:
-            botCache.msg_db[chat_id] = f'{format_message}\n'
+            brainCache.msg_db[chat_id] = f'{format_message}\n'
     return True
 
 
@@ -65,7 +68,7 @@ def gen_sentence(model, space='English', retry_times=10):
         sentence = model.make_sentence()
         retry += 1
         if retry > retry_times:
-            return error_msg
+            return False
     if space == 'English':
         # English determination
         return format_out(sentence)
@@ -78,14 +81,14 @@ def gen_sentence(model, space='English', retry_times=10):
 def gen_msg(chat_id, space='English', cache=False, retry_times=10):
     if chat_id in chat and 'combine' in chat[chat_id]:
         chat_id = chat[chat_id]['combine']
-    if cache or chat_id in botCache.models:
+    if cache or chat_id in brainCache.models:
         if random.random() < renew_rate:
             renew_model(chat_id)
-        sentence = gen_sentence(botCache.models[chat_id], space, 3)
+        sentence = gen_sentence(brainCache.models[chat_id], space, 3)
         return sentence
     else:
         try:
-            with open(f'data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
+            with open(f'../data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
                 markov = markovify.Text(f)
                 sentence = gen_sentence(markov, space, retry_times)
             return sentence

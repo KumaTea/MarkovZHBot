@@ -1,10 +1,18 @@
+# NO IMPORT
+
 name = 'Markov Bot'
+username = '@MarkovZHBot'
 self_id = 648433061
-version = '0.6.4'
-channel = 'local'
+version = '1.0'
+channel = 'cloud'
 repo = 'https://github.com/oudoubleyang/MarkovZHBot'
 
+bot_url = 'https://bot.gcp.o2y.cc'
+
 renew_rate = 0.1
+
+sentences_per_request = 100
+keyword_retry = 100
 
 user_cool_threshold = 100  # per hour
 chat_cool_threshold = 500

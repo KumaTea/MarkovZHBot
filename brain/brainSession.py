@@ -1,8 +1,7 @@
-from tgapi import Bot
-from botInfo import self_id
+from brainTools import query_token
 from apscheduler.schedulers.background import BackgroundScheduler
 
 
-bot = Bot(self_id)
+brain_token = query_token('brain')
 
 scheduler = BackgroundScheduler(misfire_grace_time=60)

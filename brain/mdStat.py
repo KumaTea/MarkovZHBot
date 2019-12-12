@@ -1,7 +1,10 @@
 import os
 from datetime import datetime
-import botCache
-from localDB import chat
+import brainCache
+try:
+    from localDB import chat
+except ImportError:
+    from emptyLocalDB import chat
 
 
 def empty_stat_data():
@@ -9,8 +12,8 @@ def empty_stat_data():
 
 
 def stat_receive(chat_id, user_id, msg_type):
-    if chat_id in botCache.stat_db:
-        stat_data = botCache.stat_db[chat_id]
+    if chat_id in brainCache.stat_db:
+        stat_data = brainCache.stat_db[chat_id]
     else:
         stat_data = empty_stat_data()
         stat_data['chat_id'] = chat_id
@@ -20,15 +23,15 @@ def stat_receive(chat_id, user_id, msg_type):
     if 'message' in msg_type or 'msg' in msg_type:
         stat_data['receive']['msg_by'].append(user_id)
     else:
-        botCache.triggered_users.append(user_id)
+        brainCache.triggered_users.append(user_id)
         stat_data['receive']['cmd_by'].append(user_id)
 
-    botCache.stat_db[chat_id] = stat_data
+    brainCache.stat_db[chat_id] = stat_data
 
 
 def stat_send(chat_id, keyword=False):
-    if chat_id in botCache.stat_db:
-        stat_data = botCache.stat_db[chat_id]
+    if chat_id in brainCache.stat_db:
+        stat_data = brainCache.stat_db[chat_id]
     else:
         stat_data = empty_stat_data()
         stat_data['chat_id'] = chat_id
@@ -39,7 +42,7 @@ def stat_send(chat_id, keyword=False):
         kw_count = stat_data['send']['keyword'].get(keyword, 0)
         stat_data['send']['keyword'][keyword] = kw_count + 1
 
-    botCache.stat_db[chat_id] = stat_data
+    brainCache.stat_db[chat_id] = stat_data
 
 
 def most(from_list):
@@ -57,8 +60,8 @@ def most(from_list):
 
 
 def read_stat(chat_id):
-    if chat_id in botCache.stat_db:
-        stat_data = botCache.stat_db[chat_id]
+    if chat_id in brainCache.stat_db:
+        stat_data = brainCache.stat_db[chat_id]
     else:
         return None, None, None, None, None, None, None
 
@@ -74,11 +77,11 @@ def read_stat(chat_id):
     if chat_id in chat:
         if 'combine' in chat[chat_id]:
             comb_chat = chat[chat_id]['combine']
-            size = os.path.getsize(f'data/{comb_chat}.txt')
+            size = os.path.getsize(f'../data/{comb_chat}.txt')
         else:
-            size = os.path.getsize(f'data/{chat_id}.txt')
+            size = os.path.getsize(f'../data/{chat_id}.txt')
     else:
-        size = os.path.getsize(f'data/{chat_id}.txt')
+        size = os.path.getsize(f'../data/{chat_id}.txt')
     if size > 1048576:
         f_size = f'{round(size/1048576, 2)}MB'
     elif size > 1024:
