@@ -1,4 +1,4 @@
-from botInfo import self_id, private_message, brain_url
+from botInfo import self_id, private_message, brain_url, send_records
 from botSession import markov, brain_token
 import botCache
 import requests
@@ -64,7 +64,7 @@ def say(update, context):
                     botCache.sentences_db[chat_id].extend(result['sentences_list'])
                 else:
                     botCache.sentences_db[chat_id] = result['sentences_list']
-            message.reply_text(sentence, quote=False)
+            return message.reply_text(sentence, quote=False)
         else:
             return False
 
@@ -99,7 +99,7 @@ def new(update, context):
                     botCache.sentences_db[chat_id].extend(result['sentences_list'])
                 else:
                     botCache.sentences_db[chat_id] = result['sentences_list']
-            markov.edit_message_text(sentence, chat_id, reply_to_message.message_id)
+            return markov.edit_message_text(sentence, chat_id, reply_to_message.message_id)
         else:
             return False
 
@@ -124,13 +124,25 @@ def record(update, context):
     if message.reply_to_message and message.reply_to_message.from_user.id == self_id:
         say(update, context)
 
-    data = {
-        'chat_id': chat_id,
-        'user_id': user_id,
-        'text': text,
-    }
-    response = contact_brain('record', data)
-    return response
+    send = False
+    if chat_id in botCache.recorded_db:
+        botCache.recorded_db[chat_id].append(text)
+        if len(botCache.recorded_db[chat_id]) > send_records:
+            send = True
+    else:
+        botCache.recorded_db[chat_id] = [text]
+
+    if send:
+        data = {
+            'chat_id': chat_id,
+            'user_id': user_id,
+            'text_list': botCache.recorded_db[chat_id],
+        }
+        response = contact_brain('record', data)
+        botCache.recorded_db[chat_id] = []
+        return response
+    else:
+        return True
 
 
 def stat(update, context):

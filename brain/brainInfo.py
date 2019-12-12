@@ -1,10 +1,8 @@
 # NO IMPORT
 
-name = 'Markov Bot'
+name = 'Markov Bot - Brain'
 username = '@MarkovZHBot'
 self_id = 648433061
-version = '1.0'
-channel = 'cloud'
 repo = 'https://github.com/oudoubleyang/MarkovZHBot'
 
 bot_url = 'https://bot.gcp.o2y.cc'
