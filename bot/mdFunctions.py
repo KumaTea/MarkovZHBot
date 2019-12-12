@@ -1,7 +1,8 @@
-from botInfo import self_id, private_message, brain_url, send_records
-from botSession import markov, brain_token
-import botCache
+import json
 import requests
+import botCache
+from botSession import markov, brain_token
+from botInfo import self_id, private_message, brain_url, send_records
 
 
 def private(update, context):
@@ -17,11 +18,11 @@ def can_delete(chat_id):
         return delete_status
 
 
-def contact_brain(command, data=None, method='GET'):
+def contact_brain(command, data=None, method='POST'):
     content = {
         'token': brain_token,
         'command': command,
-        'data': data,
+        'data': json.dumps(data),
     }
     if method == 'GET':
         response = requests.get(f'{brain_url}/{command}', params=content).json()
@@ -50,7 +51,7 @@ def say(update, context):
     if command and can_delete(chat_id):
         markov.delete_message(chat_id, message_id)
 
-    if botCache.sentences_db[chat_id]:
+    if chat_id in botCache.sentences_db and botCache.sentences_db[chat_id]:
         sentence = botCache.sentences_db[chat_id].pop()
         return message.reply_text(sentence, quote=False)
     else:
@@ -111,7 +112,7 @@ def generate(chat_id, user_id, keyword=None):
         'keyword': keyword,
         'generate_list': True
     }
-    result = contact_brain('generate', data)
+    result = contact_brain('generate', data, 'POST')
     return result
 
 
@@ -138,7 +139,7 @@ def record(update, context):
             'user_id': user_id,
             'text_list': botCache.recorded_db[chat_id],
         }
-        response = contact_brain('record', data)
+        response = contact_brain('record', data, 'POST')
         botCache.recorded_db[chat_id] = []
         return response
     else:

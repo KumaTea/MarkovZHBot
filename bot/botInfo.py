@@ -3,12 +3,12 @@
 name = 'Markov Bot'
 username = '@MarkovZHBot'
 self_id = 648433061
-version = '1.0.1'
+version = '1.0.1.2'
 channel = 'cloud'
 repo = 'https://github.com/oudoubleyang/MarkovZHBot'
 
 bot_url = 'https://bot.gcp.o2y.cc'
-brain_url = 'https://brain.ali.o2y.cc'
+brain_url = 'http://brain.gcp.o2y.cc'
 
 send_records = 100
 

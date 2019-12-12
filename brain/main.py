@@ -1,3 +1,4 @@
+import json
 import logging
 from starting import starting
 from flask import Flask, request as flask_req
@@ -27,13 +28,13 @@ def write():
 
 @app.route('/generate', methods=['GET', 'POST'])
 def process_generate():
-    received_token = flask_req.args.get('token', None) or flask_req.form.get('token', None)
+    received_token = flask_req.form.get('token', None) or flask_req.args.get('token', None)
     if received_token == brain_token:
-        command = flask_req.args.get('command', None) or flask_req.form.get('command', None)
+        command = flask_req.form.get('command', None) or flask_req.args.get('command', None)
         if command == 'generate':
-            data = flask_req.args.get('data', None) or flask_req.form.get('data', None)
+            data = flask_req.form.get('data', None) or flask_req.args.get('data', None)
             if data:
-                resp = generate(data)
+                resp = generate(json.loads(data))
                 return resp, 200
             else:
                 return 'No data', 404
@@ -45,13 +46,13 @@ def process_generate():
 
 @app.route('/record', methods=['GET', 'POST'])
 def process_record():
-    received_token = flask_req.args.get('token', None) or flask_req.form.get('token', None)
+    received_token = flask_req.form.get('token', None) or flask_req.args.get('token', None)
     if received_token == brain_token:
-        command = flask_req.args.get('command', None) or flask_req.form.get('command', None)
+        command = flask_req.form.get('command', None) or flask_req.args.get('command', None)
         if command == 'record':
-            data = flask_req.args.get('data', None) or flask_req.form.get('data', None)
+            data = flask_req.form.get('data', None) or flask_req.args.get('data', None)
             if data:
-                resp = record(data)
+                resp = record(json.loads(data))
                 return resp, 200
             else:
                 return 'No data', 404
