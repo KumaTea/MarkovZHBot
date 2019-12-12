@@ -44,16 +44,22 @@ def say(update, context):
 
     if text.startswith('/'):
         command = True
-        index = text.find('')
+        index = text.find(' ')
         if index != -1:
-            keyword = text[index]
+            keyword = text[index:]
 
     if command and can_delete(chat_id):
         markov.delete_message(chat_id, message_id)
 
     if chat_id in botCache.sentences_db and botCache.sentences_db[chat_id]:
-        sentence = botCache.sentences_db[chat_id].pop()
-        return message.reply_text(sentence, quote=False)
+        if keyword:
+            for item in botCache.sentences_db[chat_id]:
+                if keyword in item:
+                    botCache.sentences_db[chat_id].remove(item)
+                    return message.reply_text(item, quote=False)
+        else:
+            sentence = botCache.sentences_db[chat_id].pop()
+            return message.reply_text(sentence, quote=False)
     else:
         markov.send_chat_action(chat_id, 'typing')
 
