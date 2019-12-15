@@ -5,7 +5,8 @@ username = '@MarkovZHBot'
 self_id = 648433061
 repo = 'https://github.com/oudoubleyang/MarkovZHBot'
 
-bot_url = 'https://bot.gcp.o2y.cc'
+bot_url = 'https://markov.gcp.o2y.cc'
+brain_url = 'https://brain.gcp.o2y.cc'
 
 renew_rate = 0.1
 

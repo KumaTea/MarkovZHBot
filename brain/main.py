@@ -2,7 +2,7 @@ import json
 import logging
 from starting import starting
 from flask import Flask, request as flask_req
-from brainSession import brain_token
+from brainTools import post_legality
 from mdGenerate import generate
 from mdRecord import record
 from diskIO import write_msg
@@ -26,40 +26,22 @@ def write():
     return f'Writing message: {msg_status}', 200
 
 
-@app.route('/generate', methods=['GET', 'POST'])
+@app.route('/generate', methods=['POST'])
 def process_generate():
-    received_token = flask_req.form.get('token', None) or flask_req.args.get('token', None)
-    if received_token == brain_token:
-        command = flask_req.form.get('command', None) or flask_req.args.get('command', None)
-        if command == 'generate':
-            data = flask_req.form.get('data', None) or flask_req.args.get('data', None)
-            if data:
-                resp = generate(json.loads(data))
-                return resp, 200
-            else:
-                return 'No data', 404
-        else:
-            return 'Wrong entry point', 404
+    description, code = post_legality(flask_req, 'generate')
+    if code > 299:
+        return description, code
     else:
-        return 'Invalid token', 403
+        return generate(json.loads(flask_req.form.get('data'))), 200
 
 
-@app.route('/record', methods=['GET', 'POST'])
+@app.route('/record', methods=['POST'])
 def process_record():
-    received_token = flask_req.form.get('token', None) or flask_req.args.get('token', None)
-    if received_token == brain_token:
-        command = flask_req.form.get('command', None) or flask_req.args.get('command', None)
-        if command == 'record':
-            data = flask_req.form.get('data', None) or flask_req.args.get('data', None)
-            if data:
-                resp = record(json.loads(data))
-                return resp, 200
-            else:
-                return 'No data', 404
-        else:
-            return 'Wrong entry point', 404
+    description, code = post_legality(flask_req, 'record')
+    if code > 299:
+        return description, code
     else:
-        return 'Invalid token', 403
+        return record(json.loads(flask_req.form.get('data'))), 200
 
 
 # If run on local machine:

@@ -8,7 +8,7 @@ def register_handlers():
     dp.add_handler(CommandHandler(['new', 'ano', 'change'], new, Filters.group))
     dp.add_handler(CommandHandler(['stat', 'total'], stat, Filters.group))
 
-    dp.add_handler(MessageHandler(Filters.group, record))
+    dp.add_handler(MessageHandler(Filters.group & (~ Filters.command), record))
 
     dp.add_handler(MessageHandler(Filters.private, private))
     return True

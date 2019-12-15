@@ -60,20 +60,20 @@ def say(update, context):
         else:
             sentence = botCache.sentences_db[chat_id].pop()
             return message.reply_text(sentence, quote=False)
-    else:
-        markov.send_chat_action(chat_id, 'typing')
 
-        result = generate(chat_id, user_id, keyword)
-        if result['response']:
-            sentence = result['sentence']
-            if result['sentences_list']:
-                if chat_id in botCache.sentences_db:
-                    botCache.sentences_db[chat_id].extend(result['sentences_list'])
-                else:
-                    botCache.sentences_db[chat_id] = result['sentences_list']
-            return message.reply_text(sentence, quote=False)
-        else:
-            return False
+    markov.send_chat_action(chat_id, 'typing')
+
+    result = generate(chat_id, user_id, keyword)
+    if result['response']:
+        sentence = result['sentence']
+        if result['sentences_list']:
+            if chat_id in botCache.sentences_db:
+                botCache.sentences_db[chat_id].extend(result['sentences_list'])
+            else:
+                botCache.sentences_db[chat_id] = result['sentences_list']
+        return message.reply_text(sentence, quote=False)
+    else:
+        return False
 
 
 def new(update, context):

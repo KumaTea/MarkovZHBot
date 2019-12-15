@@ -15,8 +15,13 @@ register_handlers()
 starting()
 
 
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['GET'])
 def main():
+    return 'Bot part of @MarkovZHBot', 200
+
+
+@app.route('/', methods=['POST'])
+def process():
     update = Update.de_json(flask_req.json, markov)
     dp.process_update(update)
     return '', 200

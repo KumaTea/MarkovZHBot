@@ -1,6 +1,7 @@
 import os
 import base64
 from time import time
+from brainSession import brain_token
 from brainInfo import self_id, chat_expire_time
 
 
@@ -50,11 +51,14 @@ def remove_inactive_chats(path='../data'):
             print(f'[INFO] Deleted {i}')
 
 
-"""
-def set_proxy(ip='127.0.0.1', port='1080', protocol='http'):
-    proxy = f'{protocol}://{ip}:{port}'
-    os.environ['http_proxy'] = proxy
-    os.environ['HTTP_PROXY'] = proxy
-    os.environ['https_proxy'] = proxy
-    os.environ['HTTPS_PROXY'] = proxy
-"""
+def post_legality(request, required_command):
+    if request.form.get('token', None) == brain_token:
+        if request.form.get('command', None) == required_command:
+            if request.form.get('data', None):
+                return 'valid', 200
+            else:
+                return 'No data', 404
+        else:
+            return 'Wrong entry point', 400
+    else:
+        return 'Invalid token', 403
