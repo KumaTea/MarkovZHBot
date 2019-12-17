@@ -77,11 +77,11 @@ def read_stat(chat_id):
     if chat_id in chat:
         if 'combine' in chat[chat_id]:
             comb_chat = chat[chat_id]['combine']
-            size = os.path.getsize(f'../data/{comb_chat}.txt')
+            size = os.path.getsize(f'../data/text/{comb_chat}.gz')
         else:
-            size = os.path.getsize(f'../data/{chat_id}.txt')
+            size = os.path.getsize(f'../data/text/{chat_id}.gz')
     else:
-        size = os.path.getsize(f'../data/{chat_id}.txt')
+        size = os.path.getsize(f'../data/text/{chat_id}.gz')
     if size > 1048576:
         f_size = f'{round(size/1048576, 2)}MB'
     elif size > 1024:

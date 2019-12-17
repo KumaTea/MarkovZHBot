@@ -3,7 +3,7 @@
 name = 'Markov Bot'
 username = '@MarkovZHBot'
 self_id = 648433061
-version = '1.0.2'
+version = '1.0.3'
 channel = 'cloud'
 repo = 'https://github.com/oudoubleyang/MarkovZHBot'
 

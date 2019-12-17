@@ -1,7 +1,6 @@
 import os
 import base64
 from time import time
-from brainSession import brain_token
 from brainInfo import self_id, chat_expire_time
 
 
@@ -62,3 +61,6 @@ def post_legality(request, required_command):
             return 'Wrong entry point', 400
     else:
         return 'Invalid token', 403
+
+
+brain_token = query_token('brain')

@@ -1,3 +1,4 @@
+import gzip
 import jieba
 import markovify
 import random
@@ -88,8 +89,8 @@ def gen_msg(chat_id, space='English', cache=False, retry_times=10):
         return sentence
     else:
         try:
-            with open(f'../data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
-                markov = markovify.Text(f)
+            with gzip.open(f'../data/text/{chat_id}.gz', 'rb') as f:
+                markov = markovify.Text(f.read().decode('utf-8'))
                 sentence = gen_sentence(markov, space, retry_times)
             return sentence
 

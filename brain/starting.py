@@ -1,4 +1,5 @@
 import os
+import gzip
 import json
 import markovify
 # from mdStat import read_stat
@@ -22,17 +23,17 @@ def mkdir(folder=None):
 
 def pre_model(size=cache_size, large=large_size):
     files = []
-    for i in os.listdir('../data'):
-        if os.path.isfile(f'../data/{i}') and os.path.getsize(f'../data/{i}') > size:
-            files.append(f'../data/{i}')
+    for i in os.listdir('../data/text'):
+        if os.path.isfile(f'../data/text/{i}') and os.path.getsize(f'../data/text/{i}') > size:
+            files.append(f'../data/text/{i}')
     for i in files:
-        chat_id = int(os.path.splitext(i)[0].replace('../data/', ''))
+        chat_id = int(os.path.splitext(i)[0].replace('../data/text/', ''))
         print(f'[INFO] Generating cached Markov model for chat {chat_id}.')
-        with open(i, 'r', encoding='UTF-8') as f:
+        with gzip.open(i, 'rb') as f:
             if os.path.getsize(i) > large:
-                brainCache.models[chat_id] = markovify.Text(f, retain_original=False)
+                brainCache.models[chat_id] = markovify.Text(f.read().decode('utf-8'), retain_original=False)
             else:
-                brainCache.models[chat_id] = markovify.Text(f)
+                brainCache.models[chat_id] = markovify.Text(f.read().decode('utf-8'))
         print(f'[INFO] Generated.')
 
 
@@ -52,7 +53,7 @@ def pre_blacklist():
 
 
 def starting():
-    mkdir(['../data', '../stat'])
+    mkdir(['../data', '../stat', '../data/text'])
     pre_model()
     # pre_blacklist()
 

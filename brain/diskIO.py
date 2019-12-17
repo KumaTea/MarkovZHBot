@@ -1,5 +1,6 @@
 import os
 import json
+import gzip
 import brainCache
 import markovify
 from brainInfo import large_size
@@ -7,8 +8,10 @@ from brainInfo import large_size
 
 def write_msg():
     for chat in brainCache.msg_db:
-        with open(f'../data/{chat}.txt', 'a', encoding='UTF-8') as f:
-            f.write(brainCache.msg_db[chat])
+        with gzip.open(f'../data/text/{chat}.gz', 'rb') as f:
+            text = f.read()
+        with gzip.open(f'../data/{chat}.gz', 'wb') as f:
+            f.write(text + brainCache.msg_db[chat].encode('utf-8'))
         print(f'[INFO] Wrote message of {chat}.')
     brainCache.msg_db = {}
     return True
@@ -24,12 +27,12 @@ def write_stat():
 
 
 def renew_model(chat_id):
-    if os.path.getsize(f'../data/{chat_id}.txt') > large_size:
-        with open(f'../data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
-            markov = markovify.Text(f, retain_original=False)
+    if os.path.getsize(f'../data/text/{chat_id}.gz') > large_size:
+        with gzip.open(f'../data/text/{chat_id}.gz', 'rb') as f:
+            markov = markovify.Text(f.read().decode('utf-8'), retain_original=False)
     else:
-        with open(f'../data/{chat_id}.txt', 'r', encoding='UTF-8') as f:
-            markov = markovify.Text(f)
+        with gzip.open(f'../data/text/{chat_id}.gz', 'rb') as f:
+            markov = markovify.Text(f.read().decode('utf-8'))
     brainCache.models[chat_id] = markov
     print(f'[INFO] Generated new model for {chat_id}')
     return True
