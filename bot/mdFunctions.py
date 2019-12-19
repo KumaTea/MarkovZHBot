@@ -38,6 +38,8 @@ def say(update, context):
     message_id = message.message_id
     user_id = message.from_user.id
 
+    reply_info = message.reply_to_message
+
     text = message.text
     command = False
     keyword = None
@@ -51,15 +53,26 @@ def say(update, context):
     if command and can_delete(chat_id):
         markov.delete_message(chat_id, message_id)
 
+    immediately_send = None
+
     if chat_id in botCache.sentences_db and botCache.sentences_db[chat_id]:
         if keyword:
             for item in botCache.sentences_db[chat_id]:
                 if keyword in item:
                     botCache.sentences_db[chat_id].remove(item)
-                    return message.reply_text(item, quote=False)
+                    immediately_send = item
         else:
             sentence = botCache.sentences_db[chat_id].pop()
-            return message.reply_text(sentence, quote=False)
+            immediately_send = sentence
+
+    if immediately_send:
+        if reply_info:
+            if reply_info.from_user.id == self_id and not command:
+                return message.reply_text(immediately_send)
+            else:
+                return markov.send_message(chat_id, immediately_send, reply_to_message_id=reply_info.message_id)
+        else:
+            return message.reply_text(immediately_send, quote=False)
 
     markov.send_chat_action(chat_id, 'typing')
 
@@ -71,7 +84,13 @@ def say(update, context):
                 botCache.sentences_db[chat_id].extend(result['sentences_list'])
             else:
                 botCache.sentences_db[chat_id] = result['sentences_list']
-        return message.reply_text(sentence, quote=False)
+        if reply_info:
+            if reply_info.from_user.id == self_id and not command:
+                return message.reply_text(sentence)
+            else:
+                return markov.send_message(chat_id, sentence, reply_to_message_id=reply_info.message_id)
+        else:
+            return message.reply_text(sentence, quote=False)
     else:
         return False
 
