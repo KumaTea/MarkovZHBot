@@ -1,20 +1,29 @@
 import sys
+import gzip
 from pyrogram import Client
 
 app = Client('me')
-target = -0
+target = int(input('Chat ID: '))
 
-history_file = 'history.txt'
+history_file = 'history.gz'
+end_text = input('End text: ')
 
 
 if __name__ == '__main__':
     with app:
         history = []
+
+        with gzip.open(history_file, 'rb') as f:
+            old_history = f.read().decode('utf-8').split('\n')
+
         i = 0
-        for message in app.iter_history(target):
+        for message in app.iter_history(target):  # noqa
             if message.text:
+                if message.text == end_text:
+                    break
                 history.append(message.text)
                 i += 1
                 sys.stdout.write('\rGetting: {}'.format(i))
-        with open(history_file, 'w', encoding='utf-8') as f:
-            f.write('\n'.join(history))
+        history.extend([j[:-1] for j in old_history])
+        with gzip.open(history_file, 'wb') as f:
+            f.write('\n'.join(history).encode('utf-8'))

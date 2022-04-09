@@ -1,6 +1,6 @@
 import logging
+from tools import mkdir
 from session import logger
-from register import register_handlers
 
 
 def initialize():
@@ -9,5 +9,6 @@ def initialize():
         level=logging.INFO,
         datefmt='%Y-%m-%d %H:%M:%S')
 
-    register_handlers()
+    mkdir('data')
+
     return logger.info("Initialized.")
