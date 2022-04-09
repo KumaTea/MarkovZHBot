@@ -19,7 +19,7 @@ def write_messages(chat_id):
         old_history = []
 
     history.extend(old_history)
-    history = history[:max_message_cache_size]  # reverse order
+    history = history[:max_message_count]  # reverse order
 
     with xz.open(os.path.join('data', f'{chat_id}.xz'), 'wb') as f:
         f.write('\n'.join(history).encode('utf-8'))
