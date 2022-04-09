@@ -1,0 +1,6 @@
+requests
+flask
+python-telegram-bot
+jieba
+markovify
+apscheduler

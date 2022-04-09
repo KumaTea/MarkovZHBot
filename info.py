@@ -1,0 +1,5 @@
+name = '胡言乱语 Bot'
+username = '@MarkovZHBot'
+version = '0.1.0.0'
+channel = 'local'
+repo = 'https://github.com/KumaTea/MarkovZHBot'
